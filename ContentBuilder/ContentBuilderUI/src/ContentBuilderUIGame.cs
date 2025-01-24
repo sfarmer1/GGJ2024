@@ -39,7 +39,7 @@ namespace ContentBuilderUI
 			WindowCreateInfo windowCreateInfo,
 			FramePacingSettings frameLimiterSettings,
 			bool debugMode
-		) : base(windowCreateInfo, frameLimiterSettings, ShaderFormat.SPIRV, debugMode)
+		) : base(windowCreateInfo, frameLimiterSettings, ShaderFormat.SPIRV | ShaderFormat.MSL, debugMode)
 		{
 			Operations.Initialize();
 
@@ -99,11 +99,11 @@ namespace ContentBuilderUI
 
 			ImGuiVertexShader = Shader.Create(
 				GraphicsDevice,
-				Path.Combine(ShaderContentPath, "ImGui.vert.spv"),
-				"main",
+				Path.Combine(ShaderContentPath, "ImGui.vert.msl"),
+				"main0",
 				new ShaderCreateInfo
 				{
-					Format = ShaderFormat.SPIRV,
+					Format = ShaderFormat.MSL,
 					Stage = ShaderStage.Vertex,
 					NumUniformBuffers = 1
 				}
@@ -111,11 +111,11 @@ namespace ContentBuilderUI
 
 			ImGuiFragmentShader = Shader.Create(
 				GraphicsDevice,
-				Path.Combine(ShaderContentPath, "ImGui.frag.spv"),
-				"main",
+				Path.Combine(ShaderContentPath, "ImGui.frag.msl"),
+				"main0",
 				new ShaderCreateInfo
 				{
-					Format = ShaderFormat.SPIRV,
+					Format = ShaderFormat.MSL,
 					Stage = ShaderStage.Fragment,
 					NumSamplers = 1
 				}

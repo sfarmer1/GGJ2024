@@ -1,0 +1,33 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct UniformBlock
+{
+    float4x4 projectionMatrix;
+};
+
+struct main0_out
+{
+    float2 outTexCoord [[user(locn0)]];
+    float4 outColor [[user(locn1)]];
+    float4 gl_Position [[position]];
+};
+
+struct main0_in
+{
+    float2 inPosition [[attribute(0)]];
+    float2 inTexCoord [[attribute(1)]];
+    float4 inColor [[attribute(2)]];
+};
+
+vertex main0_out main0(main0_in in [[stage_in]], constant UniformBlock& Uniforms [[buffer(0)]])
+{
+    main0_out out = {};
+    out.gl_Position = Uniforms.projectionMatrix * float4(in.inPosition, 0.0, 1.0);
+    out.outTexCoord = in.inTexCoord;
+    out.outColor = in.inColor;
+    return out;
+}
+

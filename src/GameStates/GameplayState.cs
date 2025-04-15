@@ -44,8 +44,8 @@ public class GameplayState : GameState
     {
         World = new World();
 
-        GameTimerSystem = new(World);
-        TimingSystem = new(World);
+        GameTimerSystem = new GameTimerSystem(World);
+        TimingSystem = new TimingSystem(World);
         InputSystem = new InputSystem(World, Game.Inputs);
         MotionSystem = new MotionSystem(World);
         AudioSystem = new AudioSystem(World, Game.AudioDevice);

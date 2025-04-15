@@ -2,7 +2,7 @@ using System;
 using MoonTools.ECS;
 using Tactician.Components;
 using Tactician.Relations;
-using Components_Timer = Tactician.Components.Timer;
+using TimerComponent = Tactician.Components.Timer;
 using Timer = Tactician.Components.Timer;
 
 namespace Tactician.Systems;
@@ -14,7 +14,7 @@ public class TimingSystem : MoonTools.ECS.System
     public TimingSystem(World world) : base(world)
     {
         TimerFilter = FilterBuilder
-            .Include<Components_Timer>()
+            .Include<TimerComponent>()
             .Build();
     }
 
@@ -24,7 +24,7 @@ public class TimingSystem : MoonTools.ECS.System
         {
             if (HasOutRelation<DontTime>(entity)) continue;
 
-            var timer = Get<Components_Timer>(entity);
+            var timer = Get<TimerComponent>(entity);
             var time = timer.Time - (float)delta.TotalSeconds;
 
             if (time <= 0)

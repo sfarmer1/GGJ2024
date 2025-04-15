@@ -1,6 +1,6 @@
 using MoonTools.ECS;
 
-namespace RollAndCash.Relations;
+namespace Tactician.Relations;
 
 public readonly record struct Colliding();
 public readonly record struct Holding();

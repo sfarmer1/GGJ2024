@@ -3,12 +3,12 @@
 		<OutputType Condition="'$(Configuration)' == 'Debug'">Exe</OutputType>
 		<OutputType Condition="'$(Configuration)' == 'Release'">WinExe</OutputType>
 		<TargetFramework>net9.0</TargetFramework>
-		<TargetName>RollAndCash</TargetName>
+		<TargetName>Tactician</TargetName>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-		<StartupObject>RollAndCash.Program</StartupObject>
-		<AssemblyName>RollAndCash</AssemblyName>
-		<RootNamespace>RollAndCash</RootNamespace>
+		<StartupObject>Tactician.Program</StartupObject>
+		<AssemblyName>Tactician</AssemblyName>
+		<RootNamespace>Tactician</RootNamespace>
 		<TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ApplicationIcon />

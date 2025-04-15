@@ -1,9 +1,9 @@
 using System;
 using System.Numerics;
-using RollAndCash.Data;
 using MoonWorks.Math;
+using Tactician.Data;
 
-namespace RollAndCash.Components;
+namespace Tactician.Components;
 
 public struct SpriteAnimation
 {

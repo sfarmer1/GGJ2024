@@ -1,10 +1,10 @@
 
 using System;
-using RollAndCash.Components;
-using RollAndCash.Utility;
 using MoonTools.ECS;
+using Tactician.Components;
+using Tactician.Utility;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class ShelfSpawner : MoonTools.ECS.Manipulator
 {

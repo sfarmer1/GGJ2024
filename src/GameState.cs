@@ -1,7 +1,7 @@
 using System;
 using MoonWorks;
 
-namespace RollAndCash;
+namespace Tactician;
 
 public abstract class GameState
 {

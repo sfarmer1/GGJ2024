@@ -1,11 +1,11 @@
-using RollAndCash.Content;
-using RollAndCash.Systems;
+using Tactician.Content;
+using Tactician.Systems;
 using MoonTools.ECS;
 using MoonWorks.Audio;
-using RollAndCash.Components;
-using RollAndCash.Data;
+using Tactician.Components;
+using Tactician.Data;
 
-namespace RollAndCash.Messages;
+namespace Tactician.Messages;
 
 public readonly record struct PlayStaticSoundMessage(
 	StaticSoundID StaticSoundID,

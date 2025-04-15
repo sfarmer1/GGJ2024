@@ -1,7 +1,7 @@
-using RollAndCash.Content;
+using Tactician.Content;
 using MoonWorks.Graphics.Font;
 
-namespace RollAndCash;
+namespace Tactician;
 
 public struct Text
 {

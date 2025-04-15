@@ -1,8 +1,8 @@
 using MoonWorks.Graphics;
 using System.Numerics;
-using RollAndCash.Data;
+using Tactician.Data;
 
-namespace RollAndCash.Components;
+namespace Tactician.Components;
 
 public struct Sprite
 {

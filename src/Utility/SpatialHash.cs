@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using RollAndCash.Components;
+using Tactician.Components;
 
 /// <summary>
 /// Used to quickly check if two shapes are potentially overlapping.

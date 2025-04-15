@@ -3,7 +3,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Buffer = MoonWorks.Graphics.Buffer;
 
-namespace RollAndCash;
+namespace Tactician;
 
 public class SpriteBatch
 {

@@ -1,13 +1,13 @@
 using System;
 using MoonTools.ECS;
-using RollAndCash.Utility;
-using RollAndCash.Components;
 using System.Numerics;
-using RollAndCash.Data;
-using RollAndCash.Relations;
 using MoonWorks.Math;
+using Tactician.Components;
+using Tactician.Data;
+using Tactician.Relations;
+using Tactician.Utility;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public readonly record struct ProductData(string Name, Category Category, Ingredient[] Ingredients);
 

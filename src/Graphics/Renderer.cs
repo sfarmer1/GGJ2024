@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using RollAndCash.Components;
-using RollAndCash.Content;
+using Tactician.Content;
 using MoonTools.ECS;
 using MoonWorks;
 using MoonWorks.Graphics;
 using MoonWorks.Graphics.Font;
 using System.Numerics;
-using RollAndCash.Relations;
+using Tactician.Components;
+using Tactician.Relations;
 
-namespace RollAndCash;
+namespace Tactician;
 
 public class Renderer : MoonTools.ECS.Renderer
 {

@@ -1,14 +1,14 @@
 using System;
-using RollAndCash.Components;
 using MoonTools.ECS;
-using RollAndCash.Relations;
 using MoonWorks.Math;
-using RollAndCash.Content;
 using MoonWorks.Graphics.Font;
-using RollAndCash.Messages;
-using RollAndCash.Utility;
+using Tactician.Components;
+using Tactician.Content;
+using Tactician.Messages;
+using Tactician.Relations;
+using Tactician.Utility;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class UpdateSpriteAnimationSystem : MoonTools.ECS.System
 {

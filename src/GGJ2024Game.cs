@@ -1,11 +1,11 @@
 using MoonWorks.Graphics;
 using MoonWorks;
-using RollAndCash.Content;
-using RollAndCash.GameStates;
+using Tactician.Content;
+using Tactician.GameStates;
 
-namespace RollAndCash
+namespace Tactician
 {
-	public class RollAndCashGame : Game
+	public class TacticianGame : Game
 	{
 		LoadState LoadState;
 		LogoState LogoState;
@@ -16,7 +16,7 @@ namespace RollAndCash
 
 		GameState CurrentState;
 
-		public RollAndCashGame(
+		public TacticianGame(
 			WindowCreateInfo windowCreateInfo,
 			FramePacingSettings framePacingSettings,
 			ShaderFormat shaderFormats,

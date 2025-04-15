@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using RollAndCash.Components;
+using Tactician.Components;
 
-namespace RollAndCash.Data;
+namespace Tactician.Data;
 
 public readonly record struct SpriteAnimationInfoID(int ID);
 

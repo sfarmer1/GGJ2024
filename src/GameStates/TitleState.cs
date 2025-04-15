@@ -3,15 +3,15 @@ using System.IO;
 using MoonWorks;
 using MoonWorks.Audio;
 using MoonWorks.Graphics;
-using RollAndCash.Content;
-using RollAndCash.Utility;
+using Tactician.Content;
 using System.Numerics;
+using Tactician.Utility;
 
-namespace RollAndCash.GameStates;
+namespace Tactician.GameStates;
 
 public class TitleState : GameState
 {
-    RollAndCashGame Game;
+    TacticianGame Game;
     GraphicsDevice GraphicsDevice;
     AudioDevice AudioDevice;
     GameState TransitionStateA;
@@ -25,7 +25,7 @@ public class TitleState : GameState
     float Time = 30.0f;
     private float Timer = 0.0f;
 
-    public TitleState(RollAndCashGame game, GameState transitionStateA, GameState transitionStateB)
+    public TitleState(TacticianGame game, GameState transitionStateA, GameState transitionStateB)
     {
         Game = game;
         GraphicsDevice = game.GraphicsDevice;
@@ -50,7 +50,7 @@ public class TitleState : GameState
         Voice.Load(sound);
         Voice.Play();
 
-        var announcerSound = StaticAudio.Lookup(StaticAudio.RollAndCash);
+        var announcerSound = StaticAudio.Lookup(StaticAudio.Tactician);
         var announcerVoice = AudioDevice.Obtain<TransientVoice>(announcerSound.Format);
         announcerVoice.Submit(announcerSound);
         announcerVoice.SetVolume(1.8f);

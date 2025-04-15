@@ -2,11 +2,11 @@
 using System;
 using System.Numerics;
 using MoonTools.ECS;
-using RollAndCash.Components;
-using RollAndCash.Data;
-using RollAndCash.Messages;
+using Tactician.Components;
+using Tactician.Data;
+using Tactician.Messages;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class DirectionalAnimation : MoonTools.ECS.System
 {

@@ -1,12 +1,12 @@
 using System;
 using MoonWorks;
-using RollAndCash.Components;
 using MoonTools.ECS;
 using MoonWorks.Graphics;
-using RollAndCash.Utility;
-using RollAndCash.Data;
+using Tactician.Components;
+using Tactician.Data;
+using Tactician.Utility;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public enum Category
 {

@@ -4,14 +4,14 @@ using MoonWorks;
 using MoonWorks.AsyncIO;
 using MoonWorks.Graphics;
 using MoonWorks.Graphics.Font;
-using RollAndCash.Content;
-using RollAndCash.Systems;
+using Tactician.Content;
+using Tactician.Systems;
 
-namespace RollAndCash.GameStates;
+namespace Tactician.GameStates;
 
 public class LoadState : GameState
 {
-    RollAndCashGame Game;
+    TacticianGame Game;
     GraphicsDevice GraphicsDevice;
     AsyncFileLoader AsyncFileLoader;
     GameState TransitionState;
@@ -22,7 +22,7 @@ public class LoadState : GameState
     System.Diagnostics.Stopwatch Timer = new System.Diagnostics.Stopwatch();
     System.Diagnostics.Stopwatch LoadTimer = new System.Diagnostics.Stopwatch();
 
-    public LoadState(RollAndCashGame game, GameState transitionState)
+    public LoadState(TacticianGame game, GameState transitionState)
     {
         Game = game;
         GraphicsDevice = Game.GraphicsDevice;

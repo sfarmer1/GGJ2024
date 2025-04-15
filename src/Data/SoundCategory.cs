@@ -1,4 +1,4 @@
-namespace RollAndCash.Data;
+namespace Tactician.Data;
 
 public enum SoundCategory
 {

@@ -1,14 +1,14 @@
 using System;
-using RollAndCash.Components;
-using RollAndCash.Content;
-using RollAndCash.Messages;
-using RollAndCash.Relations;
-using RollAndCash.Utility;
+using Tactician.Content;
 using MoonTools.ECS;
 using MoonWorks.Graphics.Font;
-using RollAndCash.Data;
+using Tactician.Components;
+using Tactician.Data;
+using Tactician.Messages;
+using Tactician.Relations;
+using Tactician.Utility;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class Orders : MoonTools.ECS.System
 {

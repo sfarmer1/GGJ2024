@@ -1,4 +1,4 @@
-namespace RollAndCash.Content;
+namespace Tactician.Content;
 
 public static class AudioArrays
 {

@@ -1,16 +1,16 @@
 using System;
-using RollAndCash.Components;
-using RollAndCash.Content;
-using RollAndCash.Data;
-using RollAndCash.Messages;
-using RollAndCash.Relations;
-using RollAndCash.Utility;
+using Tactician.Content;
 using MoonTools.ECS;
 using MoonWorks.Graphics;
 using MoonWorks.Math;
 using System.Numerics;
+using Tactician.Components;
+using Tactician.Data;
+using Tactician.Messages;
+using Tactician.Relations;
+using Tactician.Utility;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class PlayerController : MoonTools.ECS.System
 {

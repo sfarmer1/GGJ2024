@@ -1,4 +1,4 @@
-namespace RollAndCash;
+namespace Tactician;
 
 public static class Dimensions
 {

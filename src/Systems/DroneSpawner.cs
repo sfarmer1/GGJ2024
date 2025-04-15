@@ -1,12 +1,13 @@
 using MoonTools.ECS;
 using System.Numerics;
-using RollAndCash.Components;
-using RollAndCash.Content;
-using RollAndCash.Messages;
-using RollAndCash.Relations;
-using RollAndCash.Utility;
+using Tactician.Content;
+using Tactician.Components;
+using Tactician.Data;
+using Tactician.Messages;
+using Tactician.Relations;
+using Tactician.Utility;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class DroneSpawner : Manipulator
 {
@@ -100,7 +101,7 @@ public class DroneSpawner : Manipulator
         Relate(product, emptyProductSpawner, new BelongsToProductSpawner());
 
         if (Rando.Value < 0.5f)
-            Send(new PlayStaticSoundMessage(Rando.GetRandomItem(DroneSounds), RollAndCash.Data.SoundCategory.Drone, 0.5f));
+            Send(new PlayStaticSoundMessage(Rando.GetRandomItem(DroneSounds), SoundCategory.Drone, 0.5f));
     }
 
     public void SpawnEvilDrone(Entity productToSteal)

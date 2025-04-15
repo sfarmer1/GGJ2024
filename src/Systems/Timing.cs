@@ -1,10 +1,11 @@
 using System;
 using MoonTools.ECS;
-using RollAndCash.Relations;
-using RollAndCash.Components;
-using Timer = RollAndCash.Components.Timer;
+using Tactician.Components;
+using Tactician.Relations;
+using Components_Timer = Tactician.Components.Timer;
+using Timer = Tactician.Components.Timer;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class Timing : MoonTools.ECS.System
 {
@@ -13,7 +14,7 @@ public class Timing : MoonTools.ECS.System
     public Timing(World world) : base(world)
     {
         TimerFilter = FilterBuilder
-            .Include<Timer>()
+            .Include<Components_Timer>()
             .Build();
     }
 
@@ -23,7 +24,7 @@ public class Timing : MoonTools.ECS.System
         {
             if (HasOutRelation<DontTime>(entity)) continue;
 
-            var timer = Get<Timer>(entity);
+            var timer = Get<Components_Timer>(entity);
             var time = timer.Time - (float)delta.TotalSeconds;
 
             if (time <= 0)

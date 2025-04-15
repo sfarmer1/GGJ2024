@@ -2,11 +2,11 @@ using System;
 using System.IO;
 using MoonWorks;
 
-namespace RollAndCash
+namespace Tactician
 {
 	class Program
 	{
-		public static string UserDataDirectory = $"{Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "ROLLANDCASH")}";
+		public static string UserDataDirectory = $"{Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "Tactician")}";
 
 		static void Main(string[] args)
 		{
@@ -43,7 +43,7 @@ namespace RollAndCash
 			debugMode = true;
 #endif
 
-			RollAndCashGame game = new RollAndCashGame(
+			TacticianGame game = new TacticianGame(
 				windowCreateInfo,
 				framePacingSettings,
 				MoonWorks.Graphics.ShaderFormat.SPIRV | MoonWorks.Graphics.ShaderFormat.DXBC | MoonWorks.Graphics.ShaderFormat.MSL,

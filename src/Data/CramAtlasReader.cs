@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using MoonWorks.Graphics;
 
-namespace RollAndCash.Data;
+namespace Tactician.Data;
 
 [JsonSerializable(typeof(CramTextureAtlasData))]
 internal partial class CramTextureAtlasDataContext : JsonSerializerContext

@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace RollAndCash;
+namespace Tactician;
 
 public struct UV
 {

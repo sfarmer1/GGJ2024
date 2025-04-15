@@ -1,9 +1,9 @@
 using System;
-using RollAndCash.Components;
-using RollAndCash.Messages;
 using MoonTools.ECS;
+using Tactician.Components;
+using Tactician.Messages;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class SetSpriteAnimationSystem : MoonTools.ECS.System
 {

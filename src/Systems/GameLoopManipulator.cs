@@ -1,14 +1,14 @@
-using RollAndCash;
-using RollAndCash.Components;
-using RollAndCash.Content;
-using RollAndCash.Messages;
-using RollAndCash.Systems;
+using Tactician;
+using Tactician.Components;
+using Tactician.Content;
+using Tactician.Messages;
+using Tactician.Systems;
 using MoonTools.ECS;
 using MoonWorks.Graphics.Font;
-using RollAndCash.Relations;
+using Tactician.Relations;
 using System.IO;
 using System.Numerics;
-using RollAndCash.Utility;
+using Tactician.Utility;
 
 public class GameLoopManipulator : MoonTools.ECS.Manipulator
 {
@@ -26,7 +26,7 @@ public class GameLoopManipulator : MoonTools.ECS.Manipulator
 	{
 		PlayerFilter = FilterBuilder.Include<Player>().Build();
 		ScoreFilter = FilterBuilder.Include<Score>().Build();
-		GameTimerFilter = FilterBuilder.Include<RollAndCash.Components.GameTimer>().Build();
+		GameTimerFilter = FilterBuilder.Include<Tactician.Components.GameTimer>().Build();
 		ScoreScreenFilter = FilterBuilder.Include<IsScoreScreen>().Build();
 		DestroyAtGameEndFilter = FilterBuilder.Include<DestroyAtGameEnd>().Build();
 

@@ -1,6 +1,6 @@
 using MoonWorks.Graphics;
 
-namespace RollAndCash.Data;
+namespace Tactician.Data;
 
 public static class Colors
 {

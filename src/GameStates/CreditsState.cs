@@ -4,14 +4,14 @@ using MoonWorks;
 using MoonWorks.Audio;
 using MoonWorks.Graphics;
 using MoonWorks.Graphics.Font;
-using RollAndCash.Content;
-using RollAndCash.Utility;
+using Tactician.Content;
+using Tactician.Utility;
 
-namespace RollAndCash.GameStates;
+namespace Tactician.GameStates;
 
 public class CreditsState : GameState
 {
-    RollAndCashGame Game;
+    TacticianGame Game;
     GameState TransitionState;
 
     GraphicsDevice GraphicsDevice;
@@ -35,7 +35,7 @@ public class CreditsState : GameState
     float CreditsTime = 0;
     float CreditsDuration = 4;
 
-    public CreditsState(RollAndCashGame game, GameState transitionStateA)
+    public CreditsState(TacticianGame game, GameState transitionStateA)
     {
         Game = game;
         TransitionState = transitionStateA;

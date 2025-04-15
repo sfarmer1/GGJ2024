@@ -1,13 +1,13 @@
 using System;
 using System.Numerics;
 using MoonTools.ECS;
-using RollAndCash.Utility;
-using RollAndCash.Components;
-using RollAndCash.Relations;
-using RollAndCash.Messages;
-using RollAndCash.Content;
+using Tactician.Components;
+using Tactician.Content;
+using Tactician.Messages;
+using Tactician.Relations;
+using Tactician.Utility;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class Motion : MoonTools.ECS.System
 {

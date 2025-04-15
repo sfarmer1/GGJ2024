@@ -2,14 +2,14 @@ using System;
 using System.Numerics;
 using MoonTools.ECS;
 using MoonWorks.Math;
-using RollAndCash.Components;
-using RollAndCash.Content;
-using RollAndCash.Messages;
-using RollAndCash.Relations;
-using RollAndCash.Systems;
-using RollAndCash.Utility;
+using Tactician.Content;
+using Tactician.Systems;
+using Tactician.Components;
+using Tactician.Messages;
+using Tactician.Relations;
+using Tactician.Utility;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class DroneController : MoonTools.ECS.System
 {

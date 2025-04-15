@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public static class ProductLoader
 {

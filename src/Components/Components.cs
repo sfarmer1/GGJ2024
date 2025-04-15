@@ -1,9 +1,9 @@
 using MoonWorks.Graphics;
-using RollAndCash.Systems;
-using RollAndCash.Data;
-using RollAndCash.Messages;
+using Tactician.Data;
+using Tactician.Messages;
+using Tactician.Systems;
 
-namespace RollAndCash.Components;
+namespace Tactician.Components;
 
 public readonly record struct Rectangle(int X, int Y, int Width, int Height)
 {

@@ -2,15 +2,15 @@
 using System;
 using MoonTools.ECS;
 using MoonWorks.Graphics;
-using RollAndCash.Components;
-using RollAndCash.Data;
-using RollAndCash.Content;
-using RollAndCash.Relations;
+using Tactician.Content;
 using MoonWorks.Math;
-using RollAndCash.Messages;
-using RollAndCash.Utility;
+using Tactician.Components;
+using Tactician.Data;
+using Tactician.Messages;
+using Tactician.Relations;
+using Tactician.Utility;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class Hold : MoonTools.ECS.System
 {

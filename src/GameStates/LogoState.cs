@@ -4,13 +4,13 @@ using MoonWorks;
 using MoonWorks.Audio;
 using MoonWorks.Graphics;
 using MoonWorks.Math;
-using RollAndCash.Content;
+using Tactician.Content;
 
-namespace RollAndCash.GameStates;
+namespace Tactician.GameStates;
 
 public class LogoState : GameState
 {
-    RollAndCashGame Game;
+    TacticianGame Game;
     GraphicsDevice GraphicsDevice;
     AudioDevice AudioDevice;
     GameState TransitionStateA;
@@ -29,7 +29,7 @@ public class LogoState : GameState
 
     bool SoundPlayed = false;
 
-    public LogoState(RollAndCashGame game, GameState transitionStateA, GameState transitionStateB)
+    public LogoState(TacticianGame game, GameState transitionStateA, GameState transitionStateB)
     {
         Game = game;
         GraphicsDevice = game.GraphicsDevice;

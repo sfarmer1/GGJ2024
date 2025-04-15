@@ -1,8 +1,8 @@
 using System;
-using RollAndCash.Components;
 using MoonTools.ECS;
+using Tactician.Components;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class ColorAnimation : MoonTools.ECS.System
 {

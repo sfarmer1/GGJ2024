@@ -1,17 +1,17 @@
 using System;
 using MoonTools.ECS;
 using MoonWorks;
-using RollAndCash.Components;
-using RollAndCash.Content;
-using RollAndCash.Messages;
-using RollAndCash.Relations;
-using RollAndCash.Systems;
+using Tactician.Content;
+using Tactician.Components;
+using Tactician.Messages;
+using Tactician.Relations;
+using Tactician.Systems;
 
-namespace RollAndCash.GameStates;
+namespace Tactician.GameStates;
 
 public class GameplayState : GameState
 {
-    RollAndCashGame Game;
+    TacticianGame Game;
 
     Renderer Renderer;
     World World;
@@ -34,7 +34,7 @@ public class GameplayState : GameState
     PlayerController PlayerController;
     GameState TransitionState;
 
-    public GameplayState(RollAndCashGame game, GameState transitionState)
+    public GameplayState(TacticianGame game, GameState transitionState)
     {
         Game = game;
         TransitionState = transitionState;

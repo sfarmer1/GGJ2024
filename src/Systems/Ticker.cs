@@ -1,14 +1,14 @@
 using System;
 using System.IO;
 using System.Text;
-using RollAndCash.Components;
-using RollAndCash.Content;
-using RollAndCash.Utility;
+using Tactician.Content;
+using Tactician.Utility;
 using MoonTools.ECS;
 using MoonWorks.Graphics;
 using MoonWorks.Graphics.Font;
+using Tactician.Components;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class Ticker : MoonTools.ECS.System
 {

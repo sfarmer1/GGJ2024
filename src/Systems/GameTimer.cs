@@ -1,12 +1,12 @@
 using System;
-using RollAndCash.Components;
-using RollAndCash.Content;
-using RollAndCash.Utility;
+using Tactician.Components;
+using Tactician.Content;
+using Tactician.Utility;
 using MoonTools.ECS;
 using MoonWorks;
 using MoonWorks.Input;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
 public class GameTimer : MoonTools.ECS.System
 {

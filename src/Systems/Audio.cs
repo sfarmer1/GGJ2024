@@ -31,10 +31,10 @@ public class Audio : MoonTools.ECS.System
 
 		var streamingAudioData = StreamingAudio.Lookup(StreamingAudio.attention_shoppers_v1);
 		MusicVoice = AudioDevice.Obtain<StreamingVoice>(streamingAudioData.Format);
-		MusicVoice.SetVolume(0.5f);
+		MusicVoice.SetVolume(0.0f); // TODO: re-enable audio
 
 		DroneVoice = AudioDevice.Obtain<PersistentVoice>(StaticAudio.Lookup(StaticAudio.Drone1).Format);
-		DroneVoice.SetVolume(0.5f);
+		DroneVoice.SetVolume(0.5f); // TODO: re-enable audio
 	}
 
 	public override void Update(TimeSpan delta)
@@ -93,7 +93,7 @@ public class Audio : MoonTools.ECS.System
 			voice = AudioDevice.Obtain<TransientVoice>(sound.Format);
 		}
 
-		voice.SetVolume(volume);
+		voice.SetVolume(0.0f); // TODO: re-enable audio
 		voice.SetPitch(pitch);
 		voice.SetPan(pan);
 		voice.Submit(sound);

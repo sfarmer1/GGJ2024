@@ -8,10 +8,7 @@ namespace Tactician
 	public class TacticianGame : Game
 	{
 		LoadState LoadState;
-		LogoState LogoState;
-		CreditsState CreditsState;
 		GameplayState GameplayState;
-		TitleState TitleState;
 		HowToPlayState HowToPlayState;
 
 		GameState CurrentState;
@@ -30,15 +27,11 @@ namespace Tactician
 			StreamingAudio.Init(AudioDevice);
 			Fonts.LoadAll(GraphicsDevice);
 
-			CreditsState = new CreditsState(this, TitleState);
-			LogoState = new LogoState(this, CreditsState, TitleState);
-			TitleState = new TitleState(this, LogoState, HowToPlayState);
-			LoadState = new LoadState(this, LogoState);
-			CreditsState.SetTransitionState(TitleState); // i hate this
+			GameplayState = new GameplayState(this, null);
+			LoadState = new LoadState(this, GameplayState);
 
-			GameplayState = new GameplayState(this, TitleState);
 			HowToPlayState = new HowToPlayState(this, GameplayState);
-			TitleState.SetTransitionStateB(HowToPlayState);
+			GameplayState.SetTransitionState(HowToPlayState); // i hate this
 
 			SetState(LoadState);
 		}

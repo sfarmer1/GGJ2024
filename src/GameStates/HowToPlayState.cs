@@ -20,9 +20,6 @@ public class HowToPlayState : GameState
     Texture RenderTexture;
     AudioDevice AudioDevice;
 
-    float ForceTimer = 0;
-    float MinTime = 2f;
-
     public HowToPlayState(TacticianGame game, GameState transitionState)
     {
         AudioDevice = game.AudioDevice;
@@ -46,17 +43,16 @@ public class HowToPlayState : GameState
         }
         sound.Seek(0);
         Voice.Load(sound);
+        Voice.SetVolume(0.0f); // TODO: Re-enable audio
         Voice.Play();
     }
 
     public override void Update(TimeSpan delta)
     {
-        if (ForceTimer >= MinTime && Game.Inputs.AnyPressed)
+        if (Game.Inputs.AnyPressed)
         {
             Game.SetState(TransitionState);
         }
-
-        ForceTimer += (float)delta.TotalSeconds;
     }
 
     public override void Draw(Window window, double alpha)

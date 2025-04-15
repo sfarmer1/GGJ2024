@@ -81,7 +81,7 @@ public class LoadState : GameState
         }
 
         // "loading screens are why you have loading times" -Ethan Lee
-        if (Timer.Elapsed.TotalSeconds > 3 && AsyncFileLoader.Status == AsyncFileLoaderStatus.Complete)
+        if (AsyncFileLoader.Status == AsyncFileLoaderStatus.Complete)
         {
             Timer.Stop();
             Game.SetState(TransitionState);

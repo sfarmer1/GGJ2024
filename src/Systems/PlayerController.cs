@@ -100,7 +100,7 @@ public class PlayerController : MoonTools.ECS.System
 			// Movement
 			var velocity = Get<Velocity>(entity).Value;
 
-			var accelSpeed = 128f;
+			var accelSpeed = 128;
 
 			velocity += direction * accelSpeed * deltaTime * 60;
 

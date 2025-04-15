@@ -22,7 +22,7 @@ namespace Tactician
 			{
 				WindowWidth = 1280,
 				WindowHeight = 720,
-				WindowTitle = "ROLL AND CASH: GROCERY LORDS: A LONDON JERRY STORY",
+				WindowTitle = "Tactician",
 				ScreenMode = ScreenMode.Windowed
 			};
 #else
@@ -30,7 +30,7 @@ namespace Tactician
 			{
 				WindowWidth = 1280,
 				WindowHeight = 720,
-				WindowTitle = "ROLL AND CASH: GROCERY LORDS: A LONDON JERRY STORY",
+				WindowTitle = "Tactician",
 				ScreenMode = ScreenMode.Fullscreen
 			};
 #endif

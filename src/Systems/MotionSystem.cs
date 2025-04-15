@@ -9,7 +9,7 @@ using Tactician.Utility;
 
 namespace Tactician.Systems;
 
-public class Motion : MoonTools.ECS.System
+public class MotionSystem : MoonTools.ECS.System
 {
     Filter VelocityFilter;
     Filter InteractFilter;
@@ -19,7 +19,7 @@ public class Motion : MoonTools.ECS.System
     SpatialHash<Entity> InteractSpatialHash = new SpatialHash<Entity>(0, 0, Dimensions.GAME_W, Dimensions.GAME_H, 32);
     SpatialHash<Entity> SolidSpatialHash = new SpatialHash<Entity>(0, 0, Dimensions.GAME_W, Dimensions.GAME_H, 32);
 
-    public Motion(World world) : base(world)
+    public MotionSystem(World world) : base(world)
     {
         VelocityFilter = FilterBuilder.Include<Position>().Include<Velocity>().Build();
         InteractFilter = FilterBuilder.Include<Position>().Include<Rectangle>().Include<CanInteract>().Build();

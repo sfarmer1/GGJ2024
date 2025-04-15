@@ -10,7 +10,7 @@ using Tactician.Components;
 
 namespace Tactician.Systems;
 
-public class Ticker : MoonTools.ECS.System
+public class TickerSystem : MoonTools.ECS.System
 {
 	MoonTools.ECS.Filter TickerTextFilter;
 
@@ -26,7 +26,7 @@ public class Ticker : MoonTools.ECS.System
 	string[] News;
 	int NewsIndex = 0;
 
-	public Ticker(World world, CategoriesAndIngredients categoriesAndIngredients) : base(world)
+	public TickerSystem(World world, CategoriesAndIngredients categoriesAndIngredients) : base(world)
 	{
 		TickerTextFilter = FilterBuilder
 			.Include<Position>()

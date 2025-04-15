@@ -10,7 +10,7 @@ using Tactician.Utility;
 
 namespace Tactician.Systems;
 
-public class Orders : MoonTools.ECS.System
+public class OrdersSystem : MoonTools.ECS.System
 {
     Filter CategoryFilter;
     Filter IngredientFilter;
@@ -20,7 +20,7 @@ public class Orders : MoonTools.ECS.System
     ProductSpawner ProductManipulator;
     Filter DestroyForDebugTestReasonsFilter;
 
-    public Orders(World world) : base(world)
+    public OrdersSystem(World world) : base(world)
     {
         CategoryFilter = FilterBuilder.Include<Category>().Build();
         IngredientFilter = FilterBuilder.Include<Ingredient>().Build();

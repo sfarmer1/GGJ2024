@@ -4,11 +4,11 @@ using Tactician.Components;
 
 namespace Tactician.Systems;
 
-public class ColorAnimation : MoonTools.ECS.System
+public class ColorAnimationSystem : MoonTools.ECS.System
 {
 	MoonTools.ECS.Filter ColorAnimationFilter;
 
-	public ColorAnimation(World world) : base(world)
+	public ColorAnimationSystem(World world) : base(world)
 	{
 		ColorAnimationFilter = FilterBuilder.Include<ColorBlend>().Include<ColorSpeed>().Build();
 	}

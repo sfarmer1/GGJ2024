@@ -12,13 +12,13 @@ using Tactician.Utility;
 
 namespace Tactician.Systems;
 
-public class Hold : MoonTools.ECS.System
+public class HoldSystem : MoonTools.ECS.System
 {
 	MoonTools.ECS.Filter CanHoldFilter;
 	ProductSpawner ProductSpawner;
 	DroneSpawner DroneSpawner;
 
-	public Hold(World world) : base(world)
+	public HoldSystem(World world) : base(world)
 	{
 
 		CanHoldFilter =

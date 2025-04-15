@@ -8,10 +8,10 @@ using Tactician.Messages;
 
 namespace Tactician.Systems;
 
-public class DirectionalAnimation : MoonTools.ECS.System
+public class DirectionalAnimationSystem : MoonTools.ECS.System
 {
     MoonTools.ECS.Filter DirectionFilter;
-    public DirectionalAnimation(World world) : base(world)
+    public DirectionalAnimationSystem(World world) : base(world)
     {
         DirectionFilter = FilterBuilder
         .Include<LastDirection>()

@@ -8,11 +8,11 @@ using MoonWorks.Input;
 
 namespace Tactician.Systems;
 
-public class GameTimer : MoonTools.ECS.System
+public class GameTimerSystem : MoonTools.ECS.System
 {
     GameLoopManipulator GameLoopManipulator;
 
-    public GameTimer(World world) : base(world)
+    public GameTimerSystem(World world) : base(world)
     {
         GameLoopManipulator = new GameLoopManipulator(world);
     }

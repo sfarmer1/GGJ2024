@@ -12,12 +12,12 @@ using Tactician.Utility;
 
 namespace Tactician.Systems;
 
-public class PlayerController : MoonTools.ECS.System
+public class PlayerControllerSystem : MoonTools.ECS.System
 {
 	MoonTools.ECS.Filter PlayerFilter;
 	float MaxSpeedBase = 128f;
 
-	public PlayerController(World world) : base(world)
+	public PlayerControllerSystem(World world) : base(world)
 	{
 		PlayerFilter =
 		FilterBuilder

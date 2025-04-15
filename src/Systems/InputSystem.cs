@@ -24,7 +24,7 @@ public class ControlSet
 	public VirtualButton Interact { get; set; } = new EmptyButton();
 }
 
-public class Input : MoonTools.ECS.System
+public class InputSystem : MoonTools.ECS.System
 {
 	Inputs Inputs { get; }
 
@@ -37,7 +37,7 @@ public class Input : MoonTools.ECS.System
 
 	GameLoopManipulator GameLoopManipulator;
 
-	public Input(World world, Inputs inputs) : base(world)
+	public InputSystem(World world, Inputs inputs) : base(world)
 	{
 		Inputs = inputs;
 		PlayerFilter = FilterBuilder.Include<Player>().Build();

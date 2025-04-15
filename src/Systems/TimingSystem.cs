@@ -7,11 +7,11 @@ using Timer = Tactician.Components.Timer;
 
 namespace Tactician.Systems;
 
-public class Timing : MoonTools.ECS.System
+public class TimingSystem : MoonTools.ECS.System
 {
     private Filter TimerFilter;
 
-    public Timing(World world) : base(world)
+    public TimingSystem(World world) : base(world)
     {
         TimerFilter = FilterBuilder
             .Include<Components_Timer>()

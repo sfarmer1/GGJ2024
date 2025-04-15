@@ -11,7 +11,7 @@ using Tactician.Utility;
 
 namespace Tactician.Systems;
 
-public class DroneController : MoonTools.ECS.System
+public class DroneControllerSystem : MoonTools.ECS.System
 {
     float RestockDroneSpeed = 80;
     float EvilDroneSpeed = 200;
@@ -22,7 +22,7 @@ public class DroneController : MoonTools.ECS.System
 
     DroneSpawner DroneSpawner;
 
-    public DroneController(World world) : base(world)
+    public DroneControllerSystem(World world) : base(world)
     {
         TargeterFilter = FilterBuilder.Include<CanTargetProductSpawner>().Build();
         ProductSpawnerFilter = FilterBuilder.Include<Position>().Include<CanSpawn>().Build();

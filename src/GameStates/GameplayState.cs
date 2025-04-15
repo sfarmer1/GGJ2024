@@ -15,23 +15,23 @@ public class GameplayState : GameState
 
     Renderer Renderer;
     World World;
-    Input Input;
-    Motion Motion;
-    Audio Audio;
-    Hold Hold;
+    InputSystem InputSystem;
+    MotionSystem MotionSystem;
+    AudioSystem AudioSystem;
+    HoldSystem HoldSystem;
     ProductSpawner ProductSpawner;
     ShelfSpawner ShelfSpawner;
-    Ticker Ticker;
-    Systems.GameTimer GameTimer;
-    Timing Timing;
-    Orders Orders;
+    TickerSystem TickerSystem;
+    Systems.GameTimerSystem GameTimerSystem;
+    TimingSystem TimingSystem;
+    OrdersSystem OrdersSystem;
     SetSpriteAnimationSystem SetSpriteAnimationSystem;
-    DirectionalAnimation DirectionalAnimation;
+    DirectionalAnimationSystem DirectionalAnimationSystem;
     UpdateSpriteAnimationSystem UpdateSpriteAnimationSystem;
-    ColorAnimation ColorAnimation;
-    NPCController NPCController;
-    DroneController DroneController;
-    PlayerController PlayerController;
+    ColorAnimationSystem ColorAnimationSystem;
+    NPCControllerSystem NPCControllerSystem;
+    DroneControllerSystem DroneControllerSystem;
+    PlayerControllerSystem PlayerControllerSystem;
     GameState TransitionState;
 
     public GameplayState(TacticianGame game, GameState transitionState)
@@ -44,27 +44,27 @@ public class GameplayState : GameState
     {
         World = new World();
 
-        GameTimer = new(World);
-        Timing = new(World);
-        Input = new Input(World, Game.Inputs);
-        Motion = new Motion(World);
-        Audio = new Audio(World, Game.AudioDevice);
-        PlayerController = new PlayerController(World);
-        Hold = new Hold(World);
-        Orders = new Orders(World);
+        GameTimerSystem = new(World);
+        TimingSystem = new(World);
+        InputSystem = new InputSystem(World, Game.Inputs);
+        MotionSystem = new MotionSystem(World);
+        AudioSystem = new AudioSystem(World, Game.AudioDevice);
+        PlayerControllerSystem = new PlayerControllerSystem(World);
+        HoldSystem = new HoldSystem(World);
+        OrdersSystem = new OrdersSystem(World);
         ProductSpawner = new ProductSpawner(World);
         ShelfSpawner = new ShelfSpawner(World);
         SetSpriteAnimationSystem = new SetSpriteAnimationSystem(World);
         UpdateSpriteAnimationSystem = new UpdateSpriteAnimationSystem(World);
-        ColorAnimation = new ColorAnimation(World);
-        DirectionalAnimation = new DirectionalAnimation(World);
-        NPCController = new NPCController(World);
-        DroneController = new DroneController(World);
+        ColorAnimationSystem = new ColorAnimationSystem(World);
+        DirectionalAnimationSystem = new DirectionalAnimationSystem(World);
+        NPCControllerSystem = new NPCControllerSystem(World);
+        DroneControllerSystem = new DroneControllerSystem(World);
 
         CategoriesAndIngredients cats = new CategoriesAndIngredients(World);
         cats.Initialize(World);
 
-        Ticker = new Ticker(World, cats);
+        TickerSystem = new TickerSystem(World, cats);
 
         Renderer = new Renderer(World, Game.GraphicsDevice, Game.MainWindow.SwapchainFormat);
 
@@ -103,7 +103,7 @@ public class GameplayState : GameState
         World.Set(uiBottomBackground, new Depth(9));
         World.Set(uiBottomBackground, new SpriteAnimation(Content.SpriteAnimations.HUD_Bottom, 0));
 
-        Orders.InitializeOrders();
+        OrdersSystem.InitializeOrders();
 
         var cashRegisterLeftCollision = World.CreateEntity();
         World.Set(cashRegisterLeftCollision, new Position(15, 70));
@@ -151,8 +151,8 @@ public class GameplayState : GameState
 
         World.Set(scoreTwo, new Text(Fonts.KosugiID, FontSizes.SCORE, "0"));
 
-        var playerOne = PlayerController.SpawnPlayer(0);
-        var playerTwo = PlayerController.SpawnPlayer(1);
+        var playerOne = PlayerControllerSystem.SpawnPlayer(0);
+        var playerTwo = PlayerControllerSystem.SpawnPlayer(1);
 
         World.Relate(playerOne, scoreOne, new HasScore());
         World.Relate(playerTwo, scoreTwo, new HasScore());
@@ -168,26 +168,26 @@ public class GameplayState : GameState
 
     public override void Update(TimeSpan dt)
     {
-        Timing.Update(dt);
+        TimingSystem.Update(dt);
         UpdateSpriteAnimationSystem.Update(dt);
-        GameTimer.Update(dt);
-        Ticker.Update(dt);
-        Input.Update(dt);
-        PlayerController.Update(dt);
-        NPCController.Update(dt);
-        DroneController.Update(dt);
-        Motion.Update(dt);
-        Hold.Update(dt);
-        Orders.Update(dt);
-        DirectionalAnimation.Update(dt);
+        GameTimerSystem.Update(dt);
+        TickerSystem.Update(dt);
+        InputSystem.Update(dt);
+        PlayerControllerSystem.Update(dt);
+        NPCControllerSystem.Update(dt);
+        DroneControllerSystem.Update(dt);
+        MotionSystem.Update(dt);
+        HoldSystem.Update(dt);
+        OrdersSystem.Update(dt);
+        DirectionalAnimationSystem.Update(dt);
         SetSpriteAnimationSystem.Update(dt);
-        ColorAnimation.Update(dt);
-        Audio.Update(dt);
+        ColorAnimationSystem.Update(dt);
+        AudioSystem.Update(dt);
 
         if (World.SomeMessage<EndGame>())
         {
             World.FinishUpdate();
-            Audio.Cleanup();
+            AudioSystem.Cleanup();
             World.Dispose();
             Game.SetState(TransitionState);
             return;

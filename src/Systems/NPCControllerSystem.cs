@@ -14,7 +14,7 @@ using Tactician.Utility;
 
 namespace Tactician.Systems;
 
-public class NPCController : MoonTools.ECS.System
+public class NPCControllerSystem : MoonTools.ECS.System
 {
     public MoonTools.ECS.Filter NPCFilter;
     const float NPCSpeed = 64.0f;
@@ -54,7 +54,7 @@ public class NPCController : MoonTools.ECS.System
         StaticAudio.Bizass_NPC8
     ];
 
-    public NPCController(World world) : base(world)
+    public NPCControllerSystem(World world) : base(world)
     {
         NPCFilter =
             FilterBuilder

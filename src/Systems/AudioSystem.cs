@@ -8,7 +8,7 @@ using Tactician.Utility;
 
 namespace Tactician.Systems;
 
-public class Audio : MoonTools.ECS.System
+public class AudioSystem : MoonTools.ECS.System
 {
 	AudioDevice AudioDevice;
 
@@ -18,7 +18,7 @@ public class Audio : MoonTools.ECS.System
 
 	PersistentVoice DroneVoice;
 
-	public Audio(World world, AudioDevice audioDevice) : base(world)
+	public AudioSystem(World world, AudioDevice audioDevice) : base(world)
 	{
 		AudioDevice = audioDevice;
 

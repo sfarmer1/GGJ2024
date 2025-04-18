@@ -16,9 +16,9 @@ public readonly record struct Velocity {
         Value = new Vector2(x, y);
     }
 
-    public readonly float X => Value.X;
+    public float X => Value.X;
 
-    public readonly float Y => Value.Y;
+    public float Y => Value.Y;
 
     public static implicit operator Vector2(Velocity v) {
         return v.Value;

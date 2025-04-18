@@ -6,14 +6,14 @@ namespace Tactician.Data;
 // We can't store strings in ECS because they are managed types!
 public static class TextStorage {
     private static readonly Dictionary<string, int> StringToID = new();
-    private static string[] IDToString = new string[256];
     private static readonly Stack<int> OpenIDs = new();
-    private static int NextID;
+    private static string[] _idToString = new string[256];
+    private static int _nextId;
 
     // TODO: is there some way we can reliably clear strings to free memory?
 
     public static string GetString(int id) {
-        return IDToString[id];
+        return _idToString[id];
     }
 
     public static int GetID(string text) {
@@ -24,10 +24,10 @@ public static class TextStorage {
 
     private static void RegisterString(string text) {
         if (OpenIDs.Count == 0) {
-            if (NextID >= IDToString.Length) Array.Resize(ref IDToString, IDToString.Length * 2);
-            StringToID[text] = NextID;
-            IDToString[NextID] = text;
-            NextID += 1;
+            if (_nextId >= _idToString.Length) Array.Resize(ref _idToString, _idToString.Length * 2);
+            StringToID[text] = _nextId;
+            _idToString[_nextId] = text;
+            _nextId += 1;
         }
         else {
             StringToID[text] = OpenIDs.Pop();

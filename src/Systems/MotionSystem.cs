@@ -2,9 +2,6 @@ using System;
 using System.Numerics;
 using MoonTools.ECS;
 using Tactician.Components;
-using Tactician.Content;
-using Tactician.Data;
-using Tactician.Messages;
 using Tactician.Utility;
 
 namespace Tactician.Systems;
@@ -157,31 +154,6 @@ public class MotionSystem : MoonTools.ECS.System {
                 speed = MathF.Max(speed, 0);
                 vel = speed * MathUtilities.SafeNormalize(vel);
                 Set(entity, new Velocity(vel));
-            }
-
-            if (Has<DestroyAtScreenBottom>(entity) && pos.Y > Dimensions.GAME_H - 32) {
-                if (HasOutRelation<UpdateDisplayScoreOnDestroy>(entity)) {
-                    var outEntity = OutRelationSingleton<UpdateDisplayScoreOnDestroy>(entity);
-                    var scoreEntity = OutRelationSingleton<HasScore>(outEntity);
-                    var data = GetRelationData<UpdateDisplayScoreOnDestroy>(entity, outEntity);
-                    var score = Get<DisplayScore>(scoreEntity).Value + (data.Negative ? -1 : 1);
-                    Set(scoreEntity, new Text(Fonts.KosugiID, FontSizes.SCORE, score.ToString()));
-                    Set(scoreEntity, new DisplayScore(score));
-
-                    // TODO: shouldn't tightly couple this exact money sound behavior to DestroyAtScreenBottom but hey it's a jam game
-                    var pan = ((float)pos.X / Dimensions.GAME_W * 2f - 1f) / 1.5f;
-                    var pitch = .9f + .1f * score / 800;
-
-                    Send(new PlayStaticSoundMessage(
-                        AudioArrays.Coins.GetRandomItem(),
-                        SoundCategory.Generic,
-                        2f,
-                        pitch,
-                        pan
-                    ));
-                }
-
-                Destroy(entity);
             }
 
             if (Has<DestroyWhenOutOfBounds>(entity))

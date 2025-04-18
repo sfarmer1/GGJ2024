@@ -4,6 +4,51 @@ using Tactician.Data;
 
 namespace Tactician.Components;
 
+public readonly record struct GameTimer(float Time);
+public readonly record struct Player(int Index);
+public readonly record struct Orientation(float Angle);
+public readonly record struct CanInteract;
+public readonly record struct CanInspect;
+public readonly record struct TryHold;
+public readonly record struct CanHold;
+public readonly record struct Solid;
+public readonly record struct TouchingSolid;
+public readonly record struct Name(int TextID);
+public readonly record struct Score(int Value);
+public readonly record struct DisplayScore(int Value);
+public readonly record struct Price(float Value);
+public readonly record struct ColorBlend(Color Color);
+public readonly record struct ColorSpeed(float RedSpeed, float GreenSpeed, float BlueSpeed);
+public readonly record struct Depth(float Value);
+public readonly record struct DrawAsRectangle;
+public readonly record struct TextDropShadow(int OffsetX, int OffsetY);
+public readonly record struct ForceIntegerMovement;
+public readonly record struct MaxSpeed(float Value);
+public readonly record struct AdjustFramerateToSpeed;
+public readonly record struct FunnyRunTimer(float Time); //Scooby doo style quick run when starting to move
+public readonly record struct CanFunnyRun;
+public readonly record struct LastDirection(Vector2 Direction);
+public readonly record struct FallSpeed(float Speed);
+public readonly record struct DestroyAtScreenBottom;
+public readonly record struct GameInProgress; // yaaargh
+public readonly record struct DirectionalSprites(
+    SpriteAnimationInfoID Up,
+    SpriteAnimationInfoID UpRight,
+    SpriteAnimationInfoID Right,
+    SpriteAnimationInfoID DownRight,
+    SpriteAnimationInfoID Down,
+    SpriteAnimationInfoID DownLeft,
+    SpriteAnimationInfoID Left,
+    SpriteAnimationInfoID UpLeft
+);
+public readonly record struct StoreExit;
+public readonly record struct AccelerateToPosition(Position Target, float Acceleration, float MotionDampFactor);
+public readonly record struct CanBeStolenFrom;
+public readonly record struct DestroyWhenOutOfBounds;
+public readonly record struct ColorFlicker(int ElapsedFrames, Color Color);
+public readonly record struct MotionDamp(float Damping);
+public readonly record struct SpriteScale(Vector2 Scale);
+
 public readonly record struct Rectangle(int X, int Y, int Width, int Height) {
     public int Left => X;
     public int Right => X + Width;
@@ -38,51 +83,3 @@ public readonly record struct Rectangle(int X, int Y, int Width, int Height) {
         );
     }
 }
-public readonly record struct GameTimer(float Time);
-public readonly record struct Player(int Index);
-public readonly record struct Orientation(float Angle);
-public readonly record struct CanInteract;
-public readonly record struct CanInspect;
-public readonly record struct TryHold;
-public readonly record struct CanHold;
-public readonly record struct Solid;
-public readonly record struct TouchingSolid;
-public readonly record struct Name(int TextID);
-public readonly record struct Score(int Value);
-public readonly record struct DisplayScore(int Value);
-public readonly record struct Price(float Value);
-public readonly record struct ColorBlend(Color Color);
-public readonly record struct ColorSpeed(float RedSpeed, float GreenSpeed, float BlueSpeed);
-public readonly record struct Depth(float Value);
-public readonly record struct DrawAsRectangle;
-public readonly record struct TextDropShadow(int OffsetX, int OffsetY);
-public readonly record struct ForceIntegerMovement;
-public readonly record struct MaxSpeed(float Value);
-public readonly record struct AdjustFramerateToSpeed;
-public readonly record struct FunnyRunTimer(float Time); //Scooby doo style quick run when starting to move
-public readonly record struct CanFunnyRun;
-public readonly record struct LastDirection(Vector2 Direction);
-public readonly record struct SlowDownAnimation(int BaseSpeed, int step);
-public readonly record struct FallSpeed(float Speed);
-public readonly record struct DestroyAtScreenBottom;
-public readonly record struct IsScoreScreen; // sorry
-public readonly record struct GameInProgress; // yaaargh
-public readonly record struct DirectionalSprites(
-    SpriteAnimationInfoID Up,
-    SpriteAnimationInfoID UpRight,
-    SpriteAnimationInfoID Right,
-    SpriteAnimationInfoID DownRight,
-    SpriteAnimationInfoID Down,
-    SpriteAnimationInfoID DownLeft,
-    SpriteAnimationInfoID Left,
-    SpriteAnimationInfoID UpLeft
-);
-public readonly record struct StoreExit;
-public readonly record struct AccelerateToPosition(Position Target, float Acceleration, float MotionDampFactor);
-public readonly record struct DestroyAtGameEnd;
-public readonly record struct CanBeStolenFrom;
-public readonly record struct DestroyWhenOutOfBounds;
-public readonly record struct ColorFlicker(int ElapsedFrames, Color Color);
-public readonly record struct MotionDamp(float Damping);
-public readonly record struct SpriteScale(Vector2 Scale);
-public readonly record struct LastValue(int value);

@@ -6,14 +6,16 @@ using System.Numerics;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Reflection.PortableExecutable;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace ContentBuilderUI
 {
 	class ContentBuilderUIGame : Game
 	{
-		private string ShaderContentPath = Path.Combine(System.AppContext.BaseDirectory, "Content", "Shaders");
-		private string FontContentPath = Path.Combine(AppContext.BaseDirectory, "Content", "Fonts");
+		private string ShaderContentPath = Path.Combine("Content", "Shaders");
+		private string FontContentPath = Path.Combine("Content", "Fonts");
 
 		private DebugTextureStorage TextureStorage;
 		private Texture FontTexture;
@@ -36,10 +38,11 @@ namespace ContentBuilderUI
 		private bool ProjectPathValid = false;
 
 		public unsafe ContentBuilderUIGame(
+			AppInfo appInfo,
 			WindowCreateInfo windowCreateInfo,
 			FramePacingSettings frameLimiterSettings,
 			bool debugMode
-		) : base(windowCreateInfo, frameLimiterSettings, ShaderFormat.SPIRV | ShaderFormat.MSL, debugMode)
+		) : base(appInfo, windowCreateInfo, frameLimiterSettings, ShaderFormat.SPIRV | ShaderFormat.MSL, debugMode)
 		{
 			Operations.Initialize();
 
@@ -97,29 +100,60 @@ namespace ContentBuilderUI
 			io.DisplaySize = new System.Numerics.Vector2(MainWindow.Width, MainWindow.Height);
 			io.DisplayFramebufferScale = System.Numerics.Vector2.One;
 
-			ImGuiVertexShader = Shader.Create(
-				GraphicsDevice,
-				Path.Combine(ShaderContentPath, "ImGui.vert.msl"),
-				"main0",
-				new ShaderCreateInfo
-				{
-					Format = ShaderFormat.MSL,
-					Stage = ShaderStage.Vertex,
-					NumUniformBuffers = 1
-				}
-			);
+			
+			
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)){
+				ImGuiVertexShader = Shader.Create(
+					GraphicsDevice,
+					RootTitleStorage,
+					Path.Combine(ShaderContentPath, "ImGui.vert.msl"),
+					"main0",
+					new ShaderCreateInfo
+					{
+						Format = ShaderFormat.MSL,
+						Stage = ShaderStage.Vertex,
+						NumUniformBuffers = 1
+					}
+				);
 
-			ImGuiFragmentShader = Shader.Create(
-				GraphicsDevice,
-				Path.Combine(ShaderContentPath, "ImGui.frag.msl"),
-				"main0",
-				new ShaderCreateInfo
-				{
-					Format = ShaderFormat.MSL,
-					Stage = ShaderStage.Fragment,
-					NumSamplers = 1
-				}
-			);
+				ImGuiFragmentShader = Shader.Create(
+					GraphicsDevice,
+					RootTitleStorage,
+					Path.Combine(ShaderContentPath, "ImGui.frag.msl"),
+					"main0",
+					new ShaderCreateInfo
+					{
+						Format = ShaderFormat.MSL,
+						Stage = ShaderStage.Fragment,
+						NumSamplers = 1
+					}
+				); 
+			} 
+			else {
+				ImGuiVertexShader = Shader.Create(
+					GraphicsDevice,
+					RootTitleStorage,
+					Path.Combine(ShaderContentPath, "ImGui.vert.spv"),
+					"main",
+					new ShaderCreateInfo {
+						Format = ShaderFormat.SPIRV,
+						Stage = ShaderStage.Vertex,
+						NumUniformBuffers = 1
+					}
+				);
+
+				ImGuiFragmentShader = Shader.Create(
+					GraphicsDevice,
+					RootTitleStorage,
+					Path.Combine(ShaderContentPath, "ImGui.frag.spv"),
+					"main",
+					new ShaderCreateInfo {
+						Format = ShaderFormat.SPIRV,
+						Stage = ShaderStage.Fragment,
+						NumSamplers = 1
+					}
+				);
+			}
 
 			ImGuiSampler = Sampler.Create(GraphicsDevice, SamplerCreateInfo.LinearClamp);
 
@@ -438,7 +472,7 @@ namespace ContentBuilderUI
 				out int bytesPerPixel
 			);
 
-			var pixelSpan = new Span<Color>((void*)pixelData, width * height);
+			var pixelSpan = new ReadOnlySpan<Color>((void*)pixelData, width * height);
 
 			FontTexture = textureUploader.CreateTexture2D(
 				pixelSpan,
@@ -496,14 +530,14 @@ namespace ContentBuilderUI
 				BufferUploader.SetBufferData(
 					ImGuiVertexBuffer,
 					vertexOffset,
-					new Span<Position2DTextureColorVertex>((void*) cmdList.VtxBuffer.Data, cmdList.VtxBuffer.Size),
+					new ReadOnlySpan<Position2DTextureColorVertex>((void*) cmdList.VtxBuffer.Data, cmdList.VtxBuffer.Size),
 					n == 0
 				);
 
 				BufferUploader.SetBufferData(
 					ImGuiIndexBuffer,
 					indexOffset,
-					new Span<ushort>((void*) cmdList.IdxBuffer.Data, cmdList.IdxBuffer.Size),
+					new ReadOnlySpan<ushort>((void*) cmdList.IdxBuffer.Data, cmdList.IdxBuffer.Size),
 					n == 0
 				);
 

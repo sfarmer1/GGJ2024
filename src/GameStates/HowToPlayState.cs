@@ -9,16 +9,17 @@ using Tactician.Graphics;
 namespace Tactician.GameStates;
 
 public class HowToPlayState : GameState {
-    private readonly AudioDevice _audioDevice;
     private readonly TacticianGame _game;
     private readonly GraphicsDevice _graphicsDevice;
+    private readonly GameState _transitionState;
 
     private readonly SpriteBatch _hiResSpriteBatch;
     private readonly Sampler _linearSampler;
+    
     private readonly Texture _renderTexture;
-    private readonly GameState _transitionState;
-
-    private StreamingVoice _voice;
+    private readonly AudioDevice _audioDevice;
+    private PersistentVoice _musicVoice;
+    private AudioDataQoa _music;
 
     public HowToPlayState(TacticianGame game, GameState transitionState) {
         _audioDevice = game.AudioDevice;
@@ -27,23 +28,22 @@ public class HowToPlayState : GameState {
         _transitionState = transitionState;
 
         _linearSampler = Sampler.Create(_graphicsDevice, SamplerCreateInfo.LinearClamp);
-        _hiResSpriteBatch = new SpriteBatch(_graphicsDevice, game.MainWindow.SwapchainFormat);
+        _hiResSpriteBatch = new SpriteBatch(_graphicsDevice, game.RootTitleStorage, game.MainWindow.SwapchainFormat);
 
         _renderTexture = Texture.Create2D(_graphicsDevice, Dimensions.GAME_W, Dimensions.GAME_H,
             game.MainWindow.SwapchainFormat, TextureUsageFlags.ColorTarget | TextureUsageFlags.Sampler);
     }
 
     public override void Start() {
-        var sound = StreamingAudio.Lookup(StreamingAudio.tutorial_type_beat);
-        if (_voice == null) {
-            _voice = _audioDevice.Obtain<StreamingVoice>(sound.Format);
-            _voice.Loop = true;
+        if (_musicVoice == null) {
+            _music = StreamingAudio.Lookup(StreamingAudio.tutorial_type_beat);
+            _music.Loop = true;
+            _musicVoice = AudioDevice.Obtain<PersistentVoice>(_music.Format);
         }
 
-        sound.Seek(0);
-        _voice.Load(sound);
-        _voice.SetVolume(0.0f); // TODO: Re-enable audio
-        _voice.Play();
+        _music.Seek(0);
+        _music.SendTo(_musicVoice);
+        _musicVoice.Play();
     }
 
     public override void Update(TimeSpan delta) {
@@ -91,7 +91,7 @@ public class HowToPlayState : GameState {
     }
 
     public override void End() {
-        _voice.Stop();
+        _music.Disconnect();
     }
 
     private Matrix4x4 GetHiResProjectionMatrix() {

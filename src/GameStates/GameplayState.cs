@@ -41,7 +41,7 @@ public class GameplayState : GameState {
         _colorAnimationSystem = new ColorAnimationSystem(_world);
         _directionalAnimationSystem = new DirectionalAnimationSystem(_world);
 
-        _renderer = new Renderer(_world, _game.GraphicsDevice, _game.MainWindow.SwapchainFormat);
+        _renderer = new Renderer(_world, _game.GraphicsDevice, _game.RootTitleStorage, _game.MainWindow.SwapchainFormat);
 
         var topBorder = _world.CreateEntity();
         _world.Set(topBorder, new Position(0, 65));

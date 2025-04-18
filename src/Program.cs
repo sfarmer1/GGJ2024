@@ -39,12 +39,14 @@ internal class Program {
         debugMode = true;
 #endif
 
-        var game = new TacticianGame(
-            windowCreateInfo,
-            framePacingSettings,
-            ShaderFormat.SPIRV | ShaderFormat.DXBC | ShaderFormat.MSL,
-            debugMode
-        );
+		var appInfo = new AppInfo("JerryCrew", "RollAndCash");
+		var game = new TacticianGame(
+			appInfo,
+			windowCreateInfo,
+			framePacingSettings,
+			MoonWorks.Graphics.ShaderFormat.SPIRV | MoonWorks.Graphics.ShaderFormat.DXBC | ShaderFormat.MSL,
+			debugMode
+		);
 
         game.Run();
     }

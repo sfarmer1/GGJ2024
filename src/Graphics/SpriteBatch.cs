@@ -11,6 +11,7 @@ public class SpriteBatch {
     public uint InstanceCount => (uint)_instanceIndex;
 
     private const int MAX_SPRITE_COUNT = 8192;
+    private readonly GraphicsDevice _graphicsDevice;
     private readonly ComputePipeline _computePipeline;
     private readonly GraphicsPipeline _graphicsPipeline;
     private readonly Buffer _instanceBuffer;
@@ -20,27 +21,19 @@ public class SpriteBatch {
 
     private int _instanceIndex;
 
-    public SpriteBatch(GraphicsDevice graphicsDevice, TextureFormat renderTextureFormat,
-        TextureFormat? depthTextureFormat = null) {
-        var baseContentPath = Path.Combine(
-            AppContext.BaseDirectory,
-            "Content"
+	public SpriteBatch(GraphicsDevice graphicsDevice, MoonWorks.Storage.TitleStorage titleStorage, TextureFormat renderTextureFormat, TextureFormat? depthTextureFormat = null)
+	{
+		_graphicsDevice = graphicsDevice;
+
+        var shaderContentPath = System.IO.Path.Combine(
+            "Content",
+			"Shaders"
         );
 
-        var shaderContentPath = Path.Combine(
-            baseContentPath,
-            "Shaders"
-        );
+        _computePipeline = ShaderCross.Create(_graphicsDevice, titleStorage, System.IO.Path.Combine(shaderContentPath, "SpriteBatch.comp.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV);
 
-        _computePipeline = ShaderCross.Create(graphicsDevice,
-            Path.Combine(shaderContentPath, "SpriteBatch.comp.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV);
-
-        var vertShader = ShaderCross.Create(graphicsDevice,
-            Path.Combine(shaderContentPath, "SpriteBatch.vert.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV,
-            ShaderStage.Vertex);
-        var fragShader = ShaderCross.Create(graphicsDevice,
-            Path.Combine(shaderContentPath, "SpriteBatch.frag.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV,
-            ShaderStage.Fragment);
+		var vertShader = ShaderCross.Create(_graphicsDevice, titleStorage, System.IO.Path.Combine(shaderContentPath, "SpriteBatch.vert.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV, ShaderStage.Vertex);
+		var fragShader = ShaderCross.Create(_graphicsDevice, titleStorage, System.IO.Path.Combine(shaderContentPath, "SpriteBatch.frag.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV, ShaderStage.Fragment);
 
         var createInfo = new GraphicsPipelineCreateInfo {
             TargetInfo = new GraphicsPipelineTargetInfo {

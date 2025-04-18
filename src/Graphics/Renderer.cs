@@ -3,6 +3,7 @@ using MoonTools.ECS;
 using MoonWorks;
 using MoonWorks.Graphics;
 using MoonWorks.Graphics.Font;
+using MoonWorks.Storage;
 using Tactician.Components;
 using Tactician.Content;
 using Tactician.Data;
@@ -27,7 +28,7 @@ public class Renderer : MoonTools.ECS.Renderer {
     private readonly Filter _textFilter;
     private readonly GraphicsPipeline _textPipeline;
 
-    public Renderer(World world, GraphicsDevice graphicsDevice, TextureFormat swapchainFormat) : base(world) {
+    public Renderer(World world, GraphicsDevice graphicsDevice, TitleStorage titleStorage, TextureFormat swapchainFormat) : base(world) {
         _graphicsDevice = graphicsDevice;
 
         _rectangleFilter = FilterBuilder.Include<Rectangle>().Include<Position>().Include<DrawAsRectangle>().Build();
@@ -72,7 +73,7 @@ public class Renderer : MoonTools.ECS.Renderer {
 
         _pointSampler = Sampler.Create(_graphicsDevice, SamplerCreateInfo.PointClamp);
 
-        _artSpriteBatch = new SpriteBatch(_graphicsDevice, swapchainFormat, TextureFormat.D16Unorm);
+        _artSpriteBatch = new SpriteBatch(_graphicsDevice, titleStorage, TextureFormat.D16Unorm);
     }
 
     public void Render(Window window) {

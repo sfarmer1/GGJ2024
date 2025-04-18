@@ -18,8 +18,6 @@ public class GameLoopManipulator : MoonTools.ECS.Manipulator
 	Filter ScoreScreenFilter;
 	Filter DestroyAtGameEndFilter;
 
-	DroneSpawner DroneSpawner;
-	ProductSpawner ProductSpawner;
 
 	string[] ScoreStrings;
 	public GameLoopManipulator(World world) : base(world)
@@ -29,9 +27,6 @@ public class GameLoopManipulator : MoonTools.ECS.Manipulator
 		GameTimerFilter = FilterBuilder.Include<Tactician.Components.GameTimer>().Build();
 		ScoreScreenFilter = FilterBuilder.Include<IsScoreScreen>().Build();
 		DestroyAtGameEndFilter = FilterBuilder.Include<DestroyAtGameEnd>().Build();
-
-		ProductSpawner = new ProductSpawner(world);
-		DroneSpawner = new DroneSpawner(world);
 
 		var scoreStringsFilePath = Path.Combine(
 			System.AppContext.BaseDirectory,
@@ -108,9 +103,6 @@ public class GameLoopManipulator : MoonTools.ECS.Manipulator
 
 				var timer = CreateEntity();
 				Set(timer, new Timer(countUpTime + 1f));
-				Set(timer, new PlaySoundOnTimerEnd(new PlayStaticSoundMessage(
-					tie ? Rando.GetRandomItem(DroneSpawner.EvilDroneSounds) : StaticAudio.OrderComplete
-				)));
 				Relate(trophy, timer, new DontMove());
 				Relate(trophy, timer, new DontDraw());
 			}

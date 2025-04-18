@@ -18,19 +18,10 @@ public class GameplayState : GameState
     InputSystem InputSystem;
     MotionSystem MotionSystem;
     AudioSystem AudioSystem;
-    // HoldSystem HoldSystem;
-    // ProductSpawner ProductSpawner;
-    // ShelfSpawner ShelfSpawner;
-    // TickerSystem TickerSystem;
-    // Systems.GameTimerSystem GameTimerSystem;
-    // TimingSystem TimingSystem;
-    // OrdersSystem OrdersSystem;
     SetSpriteAnimationSystem SetSpriteAnimationSystem;
     DirectionalAnimationSystem DirectionalAnimationSystem;
     UpdateSpriteAnimationSystem UpdateSpriteAnimationSystem;
     ColorAnimationSystem ColorAnimationSystem;
-    // NPCControllerSystem NPCControllerSystem;
-    // DroneControllerSystem DroneControllerSystem;
     PlayerControllerSystem PlayerControllerSystem;
     GameState TransitionState;
 
@@ -44,27 +35,14 @@ public class GameplayState : GameState
     {
         World = new World();
 
-        // GameTimerSystem = new GameTimerSystem(World);
-        // TimingSystem = new TimingSystem(World);
         InputSystem = new InputSystem(World, Game.Inputs);
         MotionSystem = new MotionSystem(World);
         AudioSystem = new AudioSystem(World, Game.AudioDevice);
         PlayerControllerSystem = new PlayerControllerSystem(World);
-        // HoldSystem = new HoldSystem(World);
-        // OrdersSystem = new OrdersSystem(World);
-        // ProductSpawner = new ProductSpawner(World);
-        // ShelfSpawner = new ShelfSpawner(World);
         SetSpriteAnimationSystem = new SetSpriteAnimationSystem(World);
         UpdateSpriteAnimationSystem = new UpdateSpriteAnimationSystem(World);
         ColorAnimationSystem = new ColorAnimationSystem(World);
         DirectionalAnimationSystem = new DirectionalAnimationSystem(World);
-        // NPCControllerSystem = new NPCControllerSystem(World);
-        // DroneControllerSystem = new DroneControllerSystem(World);
-
-        // CategoriesAndIngredients cats = new CategoriesAndIngredients(World);
-        // cats.Initialize(World);
-
-        // TickerSystem = new TickerSystem(World, cats);
 
         Renderer = new Renderer(World, Game.GraphicsDevice, Game.MainWindow.SwapchainFormat);
 
@@ -103,30 +81,6 @@ public class GameplayState : GameState
         World.Set(uiBottomBackground, new Depth(9));
         World.Set(uiBottomBackground, new SpriteAnimation(Content.SpriteAnimations.HUD_Bottom, 0));
 
-        // OrdersSystem.InitializeOrders();
-
-        var cashRegisterLeftCollision = World.CreateEntity();
-        World.Set(cashRegisterLeftCollision, new Position(15, 70));
-        World.Set(cashRegisterLeftCollision, new Rectangle(0, 0, 60, 50));
-        World.Set(cashRegisterLeftCollision, new Solid());
-
-        var cashRegisterLeftInteraction = World.CreateEntity();
-        World.Set(cashRegisterLeftInteraction, new Position(8, 70));
-        World.Set(cashRegisterLeftInteraction, new Rectangle(0, 0, 80, 90));
-        World.Set(cashRegisterLeftInteraction, new CanInteract());
-        World.Set(cashRegisterLeftInteraction, new CanFillOrders());
-
-        var cashRegisterRightCollision = World.CreateEntity();
-        World.Set(cashRegisterRightCollision, new Position(Dimensions.GAME_W, 70));
-        World.Set(cashRegisterRightCollision, new Rectangle(-80, 0, 80, 50));
-        World.Set(cashRegisterRightCollision, new Solid());
-
-        var cashRegisterRight = World.CreateEntity();
-        World.Set(cashRegisterRight, new Position(Dimensions.GAME_W, 70));
-        World.Set(cashRegisterRight, new Rectangle(-80, 0, 80, 90));
-        World.Set(cashRegisterRight, new CanInteract());
-        World.Set(cashRegisterRight, new CanFillOrders());
-
         var exit = World.CreateEntity();
         World.Set(exit, new Position(Dimensions.GAME_W * 0.5f - 44, 0));
         World.Set(exit, new Rectangle(0, 0, 80, 88));
@@ -160,25 +114,16 @@ public class GameplayState : GameState
         var gameInProgressEntity = World.CreateEntity();
         World.Set(gameInProgressEntity, new GameInProgress());
 
-        // ShelfSpawner.SpawnShelves();
-        // ProductSpawner.SpawnAllProducts();
         World.Send(new PlaySongMessage());
 
     }
 
     public override void Update(TimeSpan dt)
     {
-        // TimingSystem.Update(dt);
         UpdateSpriteAnimationSystem.Update(dt);
-        // GameTimerSystem.Update(dt);
-        // TickerSystem.Update(dt);
         InputSystem.Update(dt);
         PlayerControllerSystem.Update(dt);
-        // NPCControllerSystem.Update(dt);
-        // DroneControllerSystem.Update(dt);
         MotionSystem.Update(dt);
-        // HoldSystem.Update(dt);
-        // OrdersSystem.Update(dt);
         DirectionalAnimationSystem.Update(dt);
         SetSpriteAnimationSystem.Update(dt);
         ColorAnimationSystem.Update(dt);

@@ -1,7 +1,6 @@
 namespace Tactician.Content;
 
-public static class AudioArrays
-{
+public static class AudioArrays {
     public static StaticSoundID[] Coins = {
         StaticAudio.Coin1,
         StaticAudio.Coin2,

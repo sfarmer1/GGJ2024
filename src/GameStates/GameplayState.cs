@@ -1,38 +1,35 @@
 using System;
 using MoonTools.ECS;
 using MoonWorks;
-using Tactician.Content;
 using Tactician.Components;
+using Tactician.Content;
 using Tactician.Messages;
 using Tactician.Relations;
 using Tactician.Systems;
 
 namespace Tactician.GameStates;
 
-public class GameplayState : GameState
-{
-    TacticianGame Game;
+public class GameplayState : GameState {
+    private readonly TacticianGame Game;
+    private AudioSystem AudioSystem;
+    private ColorAnimationSystem ColorAnimationSystem;
+    private DirectionalAnimationSystem DirectionalAnimationSystem;
+    private InputSystem InputSystem;
+    private MotionSystem MotionSystem;
+    private PlayerControllerSystem PlayerControllerSystem;
 
-    Renderer Renderer;
-    World World;
-    InputSystem InputSystem;
-    MotionSystem MotionSystem;
-    AudioSystem AudioSystem;
-    SetSpriteAnimationSystem SetSpriteAnimationSystem;
-    DirectionalAnimationSystem DirectionalAnimationSystem;
-    UpdateSpriteAnimationSystem UpdateSpriteAnimationSystem;
-    ColorAnimationSystem ColorAnimationSystem;
-    PlayerControllerSystem PlayerControllerSystem;
-    GameState TransitionState;
+    private Renderer Renderer;
+    private SetSpriteAnimationSystem SetSpriteAnimationSystem;
+    private GameState TransitionState;
+    private UpdateSpriteAnimationSystem UpdateSpriteAnimationSystem;
+    private World World;
 
-    public GameplayState(TacticianGame game, GameState transitionState)
-    {
+    public GameplayState(TacticianGame game, GameState transitionState) {
         Game = game;
         TransitionState = transitionState;
     }
 
-    public override void Start()
-    {
+    public override void Start() {
         World = new World();
 
         InputSystem = new InputSystem(World, Game.Inputs);
@@ -69,17 +66,17 @@ public class GameplayState : GameState
         var background = World.CreateEntity();
         World.Set(background, new Position(0, 0));
         World.Set(background, new Depth(999));
-        World.Set(background, new SpriteAnimation(Content.SpriteAnimations.BG, 0));
+        World.Set(background, new SpriteAnimation(SpriteAnimations.BG, 0));
 
         var uiTickerBackground = World.CreateEntity();
         World.Set(uiTickerBackground, new Position(0, 0));
         World.Set(uiTickerBackground, new Depth(1));
-        World.Set(uiTickerBackground, new SpriteAnimation(Content.SpriteAnimations.HUD_Ticker, 0));
+        World.Set(uiTickerBackground, new SpriteAnimation(SpriteAnimations.HUD_Ticker, 0));
 
         var uiBottomBackground = World.CreateEntity();
         World.Set(uiBottomBackground, new Position(0, Dimensions.GAME_H - 40));
         World.Set(uiBottomBackground, new Depth(9));
-        World.Set(uiBottomBackground, new SpriteAnimation(Content.SpriteAnimations.HUD_Bottom, 0));
+        World.Set(uiBottomBackground, new SpriteAnimation(SpriteAnimations.HUD_Bottom, 0));
 
         var exit = World.CreateEntity();
         World.Set(exit, new Position(Dimensions.GAME_W * 0.5f - 44, 0));
@@ -88,7 +85,7 @@ public class GameplayState : GameState
         World.Set(exit, new CanInteract());
 
         var timer = World.CreateEntity();
-        World.Set(timer, new Components.GameTimer(5));
+        World.Set(timer, new GameTimer(5));
         World.Set(timer, new Position(Dimensions.GAME_W * 0.5f, 38));
         World.Set(timer, new TextDropShadow(1, 1));
 
@@ -115,11 +112,9 @@ public class GameplayState : GameState
         World.Set(gameInProgressEntity, new GameInProgress());
 
         World.Send(new PlaySongMessage());
-
     }
 
-    public override void Update(TimeSpan dt)
-    {
+    public override void Update(TimeSpan dt) {
         UpdateSpriteAnimationSystem.Update(dt);
         InputSystem.Update(dt);
         PlayerControllerSystem.Update(dt);
@@ -129,8 +124,7 @@ public class GameplayState : GameState
         ColorAnimationSystem.Update(dt);
         AudioSystem.Update(dt);
 
-        if (World.SomeMessage<EndGame>())
-        {
+        if (World.SomeMessage<EndGame>()) {
             World.FinishUpdate();
             AudioSystem.Cleanup();
             World.Dispose();
@@ -141,18 +135,14 @@ public class GameplayState : GameState
         World.FinishUpdate();
     }
 
-    public override void Draw(Window window, double alpha)
-    {
+    public override void Draw(Window window, double alpha) {
         Renderer.Render(Game.MainWindow);
     }
 
-    public override void End()
-    {
-
+    public override void End() {
     }
 
-    public void SetTransitionState(GameState state)
-    {
+    public void SetTransitionState(GameState state) {
         TransitionState = state;
     }
 }

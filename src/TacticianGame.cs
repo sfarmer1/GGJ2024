@@ -1,74 +1,63 @@
-using MoonWorks.Graphics;
+using System;
 using MoonWorks;
+using MoonWorks.Graphics;
+using MoonWorks.Input;
 using Tactician.Content;
 using Tactician.GameStates;
 
-namespace Tactician
-{
-	public class TacticianGame : Game
-	{
-		LoadState LoadState;
-		GameplayState GameplayState;
-		HowToPlayState HowToPlayState;
+namespace Tactician;
 
-		GameState CurrentState;
+public class TacticianGame : Game {
+    private readonly GameplayState GameplayState;
+    private readonly HowToPlayState HowToPlayState;
+    private readonly LoadState LoadState;
 
-		public TacticianGame(
-			WindowCreateInfo windowCreateInfo,
-			FramePacingSettings framePacingSettings,
-			ShaderFormat shaderFormats,
-			bool debugMode
-		) : base(windowCreateInfo, framePacingSettings, shaderFormats, debugMode)
-		{
-			Inputs.Mouse.Hide();
+    private GameState CurrentState;
 
-			TextureAtlases.Init(GraphicsDevice);
-			StaticAudioPacks.Init(AudioDevice);
-			StreamingAudio.Init(AudioDevice);
-			Fonts.LoadAll(GraphicsDevice);
+    public TacticianGame(
+        WindowCreateInfo windowCreateInfo,
+        FramePacingSettings framePacingSettings,
+        ShaderFormat shaderFormats,
+        bool debugMode
+    ) : base(windowCreateInfo, framePacingSettings, shaderFormats, debugMode) {
+        Inputs.Mouse.Hide();
 
-			GameplayState = new GameplayState(this, null);
-			LoadState = new LoadState(this, GameplayState);
+        TextureAtlases.Init(GraphicsDevice);
+        StaticAudioPacks.Init(AudioDevice);
+        StreamingAudio.Init(AudioDevice);
+        Fonts.LoadAll(GraphicsDevice);
 
-			HowToPlayState = new HowToPlayState(this, GameplayState);
-			GameplayState.SetTransitionState(HowToPlayState); // i hate this
+        GameplayState = new GameplayState(this, null);
+        LoadState = new LoadState(this, GameplayState);
 
-			SetState(LoadState);
-		}
+        HowToPlayState = new HowToPlayState(this, GameplayState);
+        GameplayState.SetTransitionState(HowToPlayState); // i hate this
 
-		protected override void Update(System.TimeSpan dt)
-		{
-			if (Inputs.Keyboard.IsPressed(MoonWorks.Input.KeyCode.F11))
-			{
-				if (MainWindow.ScreenMode == ScreenMode.Fullscreen)
-					MainWindow.SetScreenMode(ScreenMode.Windowed);
-				else
-					MainWindow.SetScreenMode(ScreenMode.Fullscreen);
+        SetState(LoadState);
+    }
 
-			}
+    protected override void Update(TimeSpan dt) {
+        if (Inputs.Keyboard.IsPressed(KeyCode.F11)) {
+            if (MainWindow.ScreenMode == ScreenMode.Fullscreen)
+                MainWindow.SetScreenMode(ScreenMode.Windowed);
+            else
+                MainWindow.SetScreenMode(ScreenMode.Fullscreen);
+        }
 
-			CurrentState.Update(dt);
-		}
+        CurrentState.Update(dt);
+    }
 
-		protected override void Draw(double alpha)
-		{
-			CurrentState.Draw(MainWindow, alpha);
-		}
+    protected override void Draw(double alpha) {
+        CurrentState.Draw(MainWindow, alpha);
+    }
 
-		protected override void Destroy()
-		{
+    protected override void Destroy() {
+    }
 
-		}
+    public void SetState(GameState gameState) {
+        if (CurrentState != null) CurrentState.End();
 
-		public void SetState(GameState gameState)
-		{
-			if (CurrentState != null)
-			{
-				CurrentState.End();
-			}
-
-			gameState.Start();
-			CurrentState = gameState;
-		}
-	}
+        gameState.Start();
+        CurrentState = gameState;
+    }
 }

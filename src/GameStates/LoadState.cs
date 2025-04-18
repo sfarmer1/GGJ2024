@@ -1,63 +1,56 @@
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using MoonWorks;
 using MoonWorks.AsyncIO;
 using MoonWorks.Graphics;
 using MoonWorks.Graphics.Font;
 using Tactician.Content;
-using Tactician.Systems;
 
 namespace Tactician.GameStates;
 
-public class LoadState : GameState
-{
-    TacticianGame Game;
-    GraphicsDevice GraphicsDevice;
-    AsyncFileLoader AsyncFileLoader;
-    GameState TransitionState;
+public class LoadState : GameState {
+    private readonly TacticianGame Game;
+    private readonly GraphicsDevice GraphicsDevice;
+    private readonly Stopwatch LoadTimer = new();
+    private readonly TextBatch TextBatch;
 
-    GraphicsPipeline TextPipeline;
-    TextBatch TextBatch;
+    private readonly GraphicsPipeline TextPipeline;
 
-    System.Diagnostics.Stopwatch Timer = new System.Diagnostics.Stopwatch();
-    System.Diagnostics.Stopwatch LoadTimer = new System.Diagnostics.Stopwatch();
+    private readonly Stopwatch Timer = new();
+    private readonly GameState TransitionState;
+    private AsyncFileLoader AsyncFileLoader;
 
-    public LoadState(TacticianGame game, GameState transitionState)
-    {
+    public LoadState(TacticianGame game, GameState transitionState) {
         Game = game;
         GraphicsDevice = Game.GraphicsDevice;
         AsyncFileLoader = new AsyncFileLoader(GraphicsDevice);
         TransitionState = transitionState;
 
         TextPipeline = GraphicsPipeline.Create(
-			GraphicsDevice,
-			new GraphicsPipelineCreateInfo
-			{
-				TargetInfo = new GraphicsPipelineTargetInfo
-				{
-					ColorTargetDescriptions =
-					[
-						new ColorTargetDescription
-						{
-							Format = game.MainWindow.SwapchainFormat,
-							BlendState = ColorTargetBlendState.PremultipliedAlphaBlend
-						}
-					]
-				},
-				DepthStencilState = DepthStencilState.Disable,
-				VertexShader = GraphicsDevice.TextVertexShader,
-				FragmentShader = GraphicsDevice.TextFragmentShader,
-				VertexInputState = GraphicsDevice.TextVertexInputState,
-				RasterizerState = RasterizerState.CCW_CullNone,
-				PrimitiveType = PrimitiveType.TriangleList,
-				MultisampleState = MultisampleState.None
-			}
-		);
+            GraphicsDevice,
+            new GraphicsPipelineCreateInfo {
+                TargetInfo = new GraphicsPipelineTargetInfo {
+                    ColorTargetDescriptions = [
+                        new ColorTargetDescription {
+                            Format = game.MainWindow.SwapchainFormat,
+                            BlendState = ColorTargetBlendState.PremultipliedAlphaBlend
+                        }
+                    ]
+                },
+                DepthStencilState = DepthStencilState.Disable,
+                VertexShader = GraphicsDevice.TextVertexShader,
+                FragmentShader = GraphicsDevice.TextFragmentShader,
+                VertexInputState = GraphicsDevice.TextVertexInputState,
+                RasterizerState = RasterizerState.CCW_CullNone,
+                PrimitiveType = PrimitiveType.TriangleList,
+                MultisampleState = MultisampleState.None
+            }
+        );
         TextBatch = new TextBatch(GraphicsDevice);
     }
 
-    public override void Start()
-    {
+    public override void Start() {
         LoadTimer.Start();
         TextureAtlases.EnqueueLoadAllImages(AsyncFileLoader);
         StaticAudioPacks.LoadAsync(AsyncFileLoader);
@@ -66,35 +59,28 @@ public class LoadState : GameState
         Timer.Start();
     }
 
-    public override void Update(TimeSpan delta)
-    {
+    public override void Update(TimeSpan delta) {
         if (AsyncFileLoader.Status == AsyncFileLoaderStatus.Failed)
-        {
             // Uh oh, time to bail!
             throw new ApplicationException("Game assets could not be loaded!");
-        }
 
-        if (LoadTimer.IsRunning && AsyncFileLoader.Status == AsyncFileLoaderStatus.Complete)
-        {
+        if (LoadTimer.IsRunning && AsyncFileLoader.Status == AsyncFileLoaderStatus.Complete) {
             LoadTimer.Stop();
             Logger.LogInfo($"Load finished in {LoadTimer.Elapsed.TotalMilliseconds}ms");
         }
 
         // "loading screens are why you have loading times" -Ethan Lee
-        if (AsyncFileLoader.Status == AsyncFileLoaderStatus.Complete)
-        {
+        if (AsyncFileLoader.Status == AsyncFileLoaderStatus.Complete) {
             Timer.Stop();
             Game.SetState(TransitionState);
         }
     }
 
-    public override void Draw(Window window, double alpha)
-    {
+    public override void Draw(Window window, double alpha) {
         var commandBuffer = GraphicsDevice.AcquireCommandBuffer();
 
         var swapchainTexture = commandBuffer.AcquireSwapchainTexture(Game.MainWindow);
-        if (swapchainTexture != null)
-        {
+        if (swapchainTexture != null) {
             TextBatch.Start();
             AddString("L", 60, new Position(1640, 1020), 1.2f + 4 * (float)Timer.Elapsed.TotalSeconds);
             AddString("O", 60, new Position(1680, 1020), 1.0f + 4 * (float)Timer.Elapsed.TotalSeconds);
@@ -118,8 +104,7 @@ public class LoadState : GameState
         GraphicsDevice.Submit(commandBuffer);
     }
 
-    public override void End()
-    {
+    public override void End() {
         AsyncFileLoader.Dispose();
         AsyncFileLoader = null;
         StaticAudioPacks.pack_0.SliceBuffers();
@@ -127,8 +112,7 @@ public class LoadState : GameState
         SpriteAnimations.LoadAll();
     }
 
-    private Matrix4x4 GetHiResProjectionMatrix()
-    {
+    private Matrix4x4 GetHiResProjectionMatrix() {
         return Matrix4x4.CreateOrthographicOffCenter(
             0,
             1920,
@@ -139,8 +123,7 @@ public class LoadState : GameState
         );
     }
 
-    private void AddString(string text, int pixelSize, Position position, float rotation)
-    {
+    private void AddString(string text, int pixelSize, Position position, float rotation) {
         TextBatch.Add(
             Fonts.FromID(Fonts.KosugiID),
             text,

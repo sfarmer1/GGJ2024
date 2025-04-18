@@ -4,27 +4,24 @@ using System.Runtime.InteropServices;
 using Tactician.Components;
 
 /// <summary>
-/// Used to quickly check if two shapes are potentially overlapping.
+///     Used to quickly check if two shapes are potentially overlapping.
 /// </summary>
 /// <typeparam name="T">The type that will be used to uniquely identify shape-transform pairs.</typeparam>
-public class SpatialHash<T> where T : unmanaged, System.IEquatable<T>
-{
-    protected readonly int CellSize;
-
+public class SpatialHash<T> where T : unmanaged, IEquatable<T> {
     protected readonly List<T>[][] Cells;
-    protected readonly Dictionary<T, Rectangle> IDBoxLookup = new Dictionary<T, Rectangle>();
+    protected readonly int CellSize;
+    protected readonly int ColumnCount;
+
+    private readonly Queue<HashSet<T>> hashSetPool = new();
+    protected readonly int Height;
+    protected readonly Dictionary<T, Rectangle> IDBoxLookup = new();
+    protected readonly int RowCount;
+    protected readonly int Width;
 
     protected readonly int X;
     protected readonly int Y;
-    protected readonly int Width;
-    protected readonly int Height;
-    protected readonly int RowCount;
-    protected readonly int ColumnCount;
 
-    private Queue<HashSet<T>> hashSetPool = new Queue<HashSet<T>>();
-
-    public SpatialHash(int x, int y, int width, int height, int cellSize)
-    {
+    public SpatialHash(int x, int y, int width, int height, int cellSize) {
         X = x;
         Y = y;
         Width = width;
@@ -34,19 +31,14 @@ public class SpatialHash<T> where T : unmanaged, System.IEquatable<T>
         CellSize = cellSize;
 
         Cells = new List<T>[RowCount][];
-        for (var i = 0; i < RowCount; i += 1)
-        {
+        for (var i = 0; i < RowCount; i += 1) {
             Cells[i] = new List<T>[ColumnCount];
 
-            for (var j = 0; j < ColumnCount; j += 1)
-            {
-                Cells[i][j] = new List<T>();
-            }
+            for (var j = 0; j < ColumnCount; j += 1) Cells[i][j] = new List<T>();
         }
     }
 
-    protected (int, int) Hash(int x, int y)
-    {
+    protected (int, int) Hash(int x, int y) {
         return (x / CellSize, y / CellSize);
     }
 
@@ -54,12 +46,11 @@ public class SpatialHash<T> where T : unmanaged, System.IEquatable<T>
     // that checks the difference between the two hash key ranges
 
     /// <summary>
-    /// Inserts an element into the SpatialHash.
-    /// Rectangles outside of the hash range will be ignored!
+    ///     Inserts an element into the SpatialHash.
+    ///     Rectangles outside of the hash range will be ignored!
     /// </summary>
     /// <param name="id">A unique ID for the shape-transform pair.</param>
-    public virtual void Insert(T id, Rectangle rectangle)
-    {
+    public virtual void Insert(T id, Rectangle rectangle) {
         var relativeX = rectangle.X - X;
         var relativeY = rectangle.Y - Y;
         var rowRangeStart = Math.Clamp(relativeX / CellSize, 0, RowCount - 1);
@@ -68,21 +59,16 @@ public class SpatialHash<T> where T : unmanaged, System.IEquatable<T>
         var columnRangeEnd = Math.Clamp((relativeY + rectangle.Height) / CellSize, 0, ColumnCount - 1);
 
         for (var i = rowRangeStart; i <= rowRangeEnd; i += 1)
-        {
-            for (var j = columnRangeStart; j <= columnRangeEnd; j += 1)
-            {
-                Cells[i][j].Add(id);
-            }
-        }
+        for (var j = columnRangeStart; j <= columnRangeEnd; j += 1)
+            Cells[i][j].Add(id);
 
         IDBoxLookup[id] = rectangle;
     }
 
     /// <summary>
-    /// Retrieves all the potential collisions of a shape-transform pair. Excludes any shape-transforms with the given ID.
+    ///     Retrieves all the potential collisions of a shape-transform pair. Excludes any shape-transforms with the given ID.
     /// </summary>
-    public RetrieveEnumerator Retrieve(T id, Rectangle rectangle)
-    {
+    public RetrieveEnumerator Retrieve(T id, Rectangle rectangle) {
         var relativeX = rectangle.X - X;
         var relativeY = rectangle.Y - Y;
         var rowRangeStart = Math.Clamp(relativeX / CellSize, 0, RowCount - 1);
@@ -98,12 +84,11 @@ public class SpatialHash<T> where T : unmanaged, System.IEquatable<T>
     }
 
     /// <summary>
-    /// Retrieves objects based on a pre-transformed AABB.
+    ///     Retrieves objects based on a pre-transformed AABB.
     /// </summary>
     /// <param name="aabb">A transformed AABB.</param>
     /// <returns></returns>
-    public RetrieveEnumerator Retrieve(Rectangle rectangle)
-    {
+    public RetrieveEnumerator Retrieve(Rectangle rectangle) {
         var relativeX = rectangle.X - X;
         var relativeY = rectangle.Y - Y;
         var rowRangeStart = Math.Clamp(relativeX / CellSize, 0, RowCount - 1);
@@ -118,55 +103,44 @@ public class SpatialHash<T> where T : unmanaged, System.IEquatable<T>
     }
 
     /// <summary>
-    /// Removes everything that has been inserted into the SpatialHash.
+    ///     Removes everything that has been inserted into the SpatialHash.
     /// </summary>
-    public virtual void Clear()
-    {
+    public virtual void Clear() {
         for (var i = 0; i < RowCount; i += 1)
-        {
-            for (var j = 0; j < ColumnCount; j += 1)
-            {
-                Cells[i][j].Clear();
-            }
-        }
+        for (var j = 0; j < ColumnCount; j += 1)
+            Cells[i][j].Clear();
 
         IDBoxLookup.Clear();
     }
 
-    internal static KeysEnumerator Keys(int minX, int minY, int maxX, int maxY)
-    {
+    internal static KeysEnumerator Keys(int minX, int minY, int maxX, int maxY) {
         return new KeysEnumerator(minX, minY, maxX, maxY);
     }
 
-    private HashSet<T> AcquireHashSet()
-    {
-        if (hashSetPool.Count == 0)
-        {
-            hashSetPool.Enqueue(new HashSet<T>());
-        }
+    private HashSet<T> AcquireHashSet() {
+        if (hashSetPool.Count == 0) hashSetPool.Enqueue(new HashSet<T>());
 
         var hashSet = hashSetPool.Dequeue();
         hashSet.Clear();
         return hashSet;
     }
 
-    private void FreeHashSet(HashSet<T> hashSet)
-    {
+    private void FreeHashSet(HashSet<T> hashSet) {
         hashSetPool.Enqueue(hashSet);
     }
 
-    internal ref struct KeysEnumerator
-    {
+    internal ref struct KeysEnumerator {
         private int MinX;
-        private int MinY;
-        private int MaxX;
-        private int MaxY;
+        private readonly int MinY;
+        private readonly int MaxX;
+        private readonly int MaxY;
         private int i, j;
 
-        public KeysEnumerator GetEnumerator() => this;
+        public KeysEnumerator GetEnumerator() {
+            return this;
+        }
 
-        public KeysEnumerator(int minX, int minY, int maxX, int maxY)
-        {
+        public KeysEnumerator(int minX, int minY, int maxX, int maxY) {
             MinX = minX;
             MinY = minY;
             MaxX = maxX;
@@ -175,15 +149,13 @@ public class SpatialHash<T> where T : unmanaged, System.IEquatable<T>
             j = minY - 1;
         }
 
-        public bool MoveNext()
-        {
-            if (j < MaxY)
-            {
+        public bool MoveNext() {
+            if (j < MaxY) {
                 j += 1;
                 return true;
             }
-            else if (i < MaxX)
-            {
+
+            if (i < MaxX) {
                 i += 1;
                 j = MinY;
                 return true;
@@ -195,16 +167,17 @@ public class SpatialHash<T> where T : unmanaged, System.IEquatable<T>
         public (int, int) Current => (i, j);
     }
 
-    public ref struct RetrieveEnumerator
-    {
+    public ref struct RetrieveEnumerator {
         public SpatialHash<T> SpatialHash;
         private KeysEnumerator KeysEnumerator;
         private Span<T>.Enumerator SpanEnumerator;
         private bool HashSetEnumeratorActive;
-        private HashSet<T> Duplicates;
-        private T? ID;
+        private readonly HashSet<T> Duplicates;
+        private readonly T? ID;
 
-        public RetrieveEnumerator GetEnumerator() => this;
+        public RetrieveEnumerator GetEnumerator() {
+            return this;
+        }
 
         internal RetrieveEnumerator(
             SpatialHash<T> spatialHash,
@@ -231,14 +204,9 @@ public class SpatialHash<T> where T : unmanaged, System.IEquatable<T>
             ID = null;
         }
 
-        public bool MoveNext()
-        {
-            if (!HashSetEnumeratorActive || !SpanEnumerator.MoveNext())
-            {
-                if (!KeysEnumerator.MoveNext())
-                {
-                    return false;
-                }
+        public bool MoveNext() {
+            if (!HashSetEnumeratorActive || !SpanEnumerator.MoveNext()) {
+                if (!KeysEnumerator.MoveNext()) return false;
 
                 var (i, j) = KeysEnumerator.Current;
                 SpanEnumerator = CollectionsMarshal.AsSpan(SpatialHash.Cells[i][j]).GetEnumerator();
@@ -250,35 +218,25 @@ public class SpatialHash<T> where T : unmanaged, System.IEquatable<T>
             // conditions
             var t = SpanEnumerator.Current;
 
-            if (Duplicates.Contains(t))
-            {
-                return MoveNext();
-            }
+            if (Duplicates.Contains(t)) return MoveNext();
 
             if (ID.HasValue)
-            {
                 if (ID.Value.Equals(t))
-                {
                     return MoveNext();
-                }
-            }
 
             Duplicates.Add(t);
             return true;
         }
 
-        public (T, Rectangle) Current
-        {
-            get
-            {
+        public (T, Rectangle) Current {
+            get {
                 var t = SpanEnumerator.Current;
                 var rect = SpatialHash.IDBoxLookup[t];
                 return (t, rect);
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             SpatialHash.FreeHashSet(Duplicates);
         }
     }

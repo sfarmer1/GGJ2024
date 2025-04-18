@@ -1,27 +1,25 @@
 using System;
+using System.Numerics;
 using MoonWorks;
 using MoonWorks.Audio;
 using MoonWorks.Graphics;
-using System.Numerics;
 using Tactician.Content;
 
 namespace Tactician.GameStates;
 
-public class HowToPlayState : GameState
-{
-    TacticianGame Game;
-    GraphicsDevice GraphicsDevice;
-    GameState TransitionState;
+public class HowToPlayState : GameState {
+    private readonly AudioDevice AudioDevice;
+    private readonly TacticianGame Game;
+    private readonly GraphicsDevice GraphicsDevice;
 
-    SpriteBatch HiResSpriteBatch;
-    Sampler LinearSampler;
+    private readonly SpriteBatch HiResSpriteBatch;
+    private readonly Sampler LinearSampler;
+    private readonly Texture RenderTexture;
+    private readonly GameState TransitionState;
 
-    StreamingVoice Voice;
-    Texture RenderTexture;
-    AudioDevice AudioDevice;
+    private StreamingVoice Voice;
 
-    public HowToPlayState(TacticianGame game, GameState transitionState)
-    {
+    public HowToPlayState(TacticianGame game, GameState transitionState) {
         AudioDevice = game.AudioDevice;
         Game = game;
         GraphicsDevice = game.GraphicsDevice;
@@ -30,39 +28,33 @@ public class HowToPlayState : GameState
         LinearSampler = Sampler.Create(GraphicsDevice, SamplerCreateInfo.LinearClamp);
         HiResSpriteBatch = new SpriteBatch(GraphicsDevice, game.MainWindow.SwapchainFormat);
 
-        RenderTexture = Texture.Create2D(GraphicsDevice, Dimensions.GAME_W, Dimensions.GAME_H, game.MainWindow.SwapchainFormat, TextureUsageFlags.ColorTarget | TextureUsageFlags.Sampler);
+        RenderTexture = Texture.Create2D(GraphicsDevice, Dimensions.GAME_W, Dimensions.GAME_H,
+            game.MainWindow.SwapchainFormat, TextureUsageFlags.ColorTarget | TextureUsageFlags.Sampler);
     }
 
-    public override void Start()
-    {
+    public override void Start() {
         var sound = StreamingAudio.Lookup(StreamingAudio.tutorial_type_beat);
-        if (Voice == null)
-        {
+        if (Voice == null) {
             Voice = AudioDevice.Obtain<StreamingVoice>(sound.Format);
             Voice.Loop = true;
         }
+
         sound.Seek(0);
         Voice.Load(sound);
         Voice.SetVolume(0.0f); // TODO: Re-enable audio
         Voice.Play();
     }
 
-    public override void Update(TimeSpan delta)
-    {
-        if (Game.Inputs.AnyPressed)
-        {
-            Game.SetState(TransitionState);
-        }
+    public override void Update(TimeSpan delta) {
+        if (Game.Inputs.AnyPressed) Game.SetState(TransitionState);
     }
 
-    public override void Draw(Window window, double alpha)
-    {
+    public override void Draw(Window window, double alpha) {
         var commandBuffer = GraphicsDevice.AcquireCommandBuffer();
 
         var swapchainTexture = commandBuffer.AcquireSwapchainTexture(window);
 
-        if (swapchainTexture != null)
-        {
+        if (swapchainTexture != null) {
             HiResSpriteBatch.Start();
 
             var logoAnimation = SpriteAnimations.Screen_HowToPlay;
@@ -79,7 +71,8 @@ public class HowToPlayState : GameState
 
             var renderPass = commandBuffer.BeginRenderPass(new ColorTargetInfo(RenderTexture, Color.Black));
 
-            var hiResViewProjectionMatrices = new ViewProjectionMatrices(Matrix4x4.Identity, GetHiResProjectionMatrix());
+            var hiResViewProjectionMatrices =
+                new ViewProjectionMatrices(Matrix4x4.Identity, GetHiResProjectionMatrix());
 
             HiResSpriteBatch.Render(
                 renderPass,
@@ -91,19 +84,16 @@ public class HowToPlayState : GameState
             commandBuffer.EndRenderPass(renderPass);
 
             commandBuffer.Blit(RenderTexture, swapchainTexture, Filter.Nearest);
-
         }
 
         GraphicsDevice.Submit(commandBuffer);
     }
 
-    public override void End()
-    {
+    public override void End() {
         Voice.Stop();
     }
 
-    private Matrix4x4 GetHiResProjectionMatrix()
-    {
+    private Matrix4x4 GetHiResProjectionMatrix() {
         return Matrix4x4.CreateOrthographicOffCenter(
             0,
             Dimensions.GAME_W,

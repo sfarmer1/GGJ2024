@@ -5,34 +5,33 @@ using Tactician.Components;
 using Tactician.Content;
 using Tactician.Data;
 using Tactician.Messages;
-using Tactician.Relations;
 using Tactician.Utility;
 
 namespace Tactician.Systems;
 
 public class MotionSystem : MoonTools.ECS.System {
-    private readonly Filter AccelerateToPositionFilter;
-    private readonly Filter InteractFilter;
+    private readonly Filter _accelerateToPositionFilter;
+    private readonly Filter _interactFilter;
 
-    private readonly SpatialHash<Entity> InteractSpatialHash = new(0, 0, Dimensions.GAME_W, Dimensions.GAME_H, 32);
-    private readonly Filter SolidFilter;
-    private readonly SpatialHash<Entity> SolidSpatialHash = new(0, 0, Dimensions.GAME_W, Dimensions.GAME_H, 32);
-    private readonly Filter VelocityFilter;
+    private readonly SpatialHash<Entity> _interactSpatialHash = new(0, 0, Dimensions.GAME_W, Dimensions.GAME_H, 32);
+    private readonly Filter _solidFilter;
+    private readonly SpatialHash<Entity> _solidSpatialHash = new(0, 0, Dimensions.GAME_W, Dimensions.GAME_H, 32);
+    private readonly Filter _velocityFilter;
 
     public MotionSystem(World world) : base(world) {
-        VelocityFilter = FilterBuilder.Include<Position>().Include<Velocity>().Build();
-        InteractFilter = FilterBuilder.Include<Position>().Include<Rectangle>().Include<CanInteract>().Build();
-        SolidFilter = FilterBuilder.Include<Position>().Include<Rectangle>().Include<Solid>().Build();
-        AccelerateToPositionFilter = FilterBuilder.Include<Position>().Include<AccelerateToPosition>()
+        _velocityFilter = FilterBuilder.Include<Position>().Include<Velocity>().Build();
+        _interactFilter = FilterBuilder.Include<Position>().Include<Rectangle>().Include<CanInteract>().Build();
+        _solidFilter = FilterBuilder.Include<Position>().Include<Rectangle>().Include<Solid>().Build();
+        _accelerateToPositionFilter = FilterBuilder.Include<Position>().Include<AccelerateToPosition>()
             .Include<Velocity>().Build();
     }
 
     private void ClearCanBeHeldSpatialHash() {
-        InteractSpatialHash.Clear();
+        _interactSpatialHash.Clear();
     }
 
     private void ClearSolidSpatialHash() {
-        SolidSpatialHash.Clear();
+        _solidSpatialHash.Clear();
     }
 
     private Rectangle GetWorldRect(Position p, Rectangle r) {
@@ -40,7 +39,7 @@ public class MotionSystem : MoonTools.ECS.System {
     }
 
     private (Entity other, bool hit) CheckSolidCollision(Entity e, Rectangle rect) {
-        foreach (var (other, otherRect) in SolidSpatialHash.Retrieve(e, rect))
+        foreach (var (other, otherRect) in _solidSpatialHash.Retrieve(e, rect))
             if (rect.Intersects(otherRect))
                 return (other, true);
 
@@ -104,33 +103,33 @@ public class MotionSystem : MoonTools.ECS.System {
         ClearCanBeHeldSpatialHash();
         ClearSolidSpatialHash();
 
-        foreach (var entity in InteractFilter.Entities) {
+        foreach (var entity in _interactFilter.Entities) {
             var position = Get<Position>(entity);
             var rect = Get<Rectangle>(entity);
 
-            InteractSpatialHash.Insert(entity, GetWorldRect(position, rect));
+            _interactSpatialHash.Insert(entity, GetWorldRect(position, rect));
         }
 
-        foreach (var entity in InteractFilter.Entities)
+        foreach (var entity in _interactFilter.Entities)
         foreach (var other in OutRelations<Colliding>(entity))
             Unrelate<Colliding>(entity, other);
 
-        foreach (var entity in InteractFilter.Entities) {
+        foreach (var entity in _interactFilter.Entities) {
             var position = Get<Position>(entity);
             var rect = GetWorldRect(position, Get<Rectangle>(entity));
 
-            foreach (var (other, otherRect) in InteractSpatialHash.Retrieve(rect))
+            foreach (var (other, otherRect) in _interactSpatialHash.Retrieve(rect))
                 if (rect.Intersects(otherRect))
                     Relate(entity, other, new Colliding());
         }
 
-        foreach (var entity in SolidFilter.Entities) {
+        foreach (var entity in _solidFilter.Entities) {
             var position = Get<Position>(entity);
             var rect = Get<Rectangle>(entity);
-            SolidSpatialHash.Insert(entity, GetWorldRect(position, rect));
+            _solidSpatialHash.Insert(entity, GetWorldRect(position, rect));
         }
 
-        foreach (var entity in VelocityFilter.Entities) {
+        foreach (var entity in _velocityFilter.Entities) {
             if (HasOutRelation<DontMove>(entity))
                 continue;
 
@@ -199,19 +198,19 @@ public class MotionSystem : MoonTools.ECS.System {
                 var position = Get<Position>(entity);
                 var rect = Get<Rectangle>(entity);
 
-                InteractSpatialHash.Insert(entity, GetWorldRect(position, rect));
+                _interactSpatialHash.Insert(entity, GetWorldRect(position, rect));
             }
 
             if (Has<Solid>(entity)) {
                 var position = Get<Position>(entity);
                 var rect = Get<Rectangle>(entity);
-                SolidSpatialHash.Insert(entity, GetWorldRect(position, rect));
+                _solidSpatialHash.Insert(entity, GetWorldRect(position, rect));
             }
         }
 
-        foreach (var entity in SolidFilter.Entities) UnrelateAll<TouchingSolid>(entity);
+        foreach (var entity in _solidFilter.Entities) UnrelateAll<TouchingSolid>(entity);
 
-        foreach (var entity in SolidFilter.Entities) {
+        foreach (var entity in _solidFilter.Entities) {
             var position = Get<Position>(entity);
             var rectangle = Get<Rectangle>(entity);
 
@@ -238,7 +237,7 @@ public class MotionSystem : MoonTools.ECS.System {
             if (downCollided) Relate(entity, downOther, new TouchingSolid());
         }
 
-        foreach (var entity in AccelerateToPositionFilter.Entities) {
+        foreach (var entity in _accelerateToPositionFilter.Entities) {
             var velocity = Get<Velocity>(entity).Value;
             var position = Get<Position>(entity);
             var accelTo = Get<AccelerateToPosition>(entity);

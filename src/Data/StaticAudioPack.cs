@@ -13,15 +13,15 @@ internal partial class StaticAudioPackDictionaryContext : JsonSerializerContext 
 }
 
 public class StaticAudioPack : IDisposable {
-    private static readonly JsonSerializerOptions serializerOptions = new() {
+    private static readonly JsonSerializerOptions SerializerOptions = new() {
         IncludeFields = true
     };
 
-    private static readonly StaticAudioPackDictionaryContext serializerContext = new(serializerOptions);
-    private readonly Dictionary<string, AudioBuffer> AudioBuffers = new();
+    private static readonly StaticAudioPackDictionaryContext SerializerContext = new(SerializerOptions);
+    private readonly Dictionary<string, AudioBuffer> _audioBuffers = new();
 
-    private Dictionary<string, StaticAudioPackDataEntry> Entries;
-    private bool IsDisposed;
+    private Dictionary<string, StaticAudioPackDataEntry> _entries;
+    private bool _isDisposed;
     public FileInfo AudioFile { get; private set; }
 
     public AudioBuffer MainBuffer { get; private set; }
@@ -34,10 +34,10 @@ public class StaticAudioPack : IDisposable {
 
     public void Init(AudioDevice audioDevice, string audioFilePath, string jsonFilePath) {
         AudioFile = new FileInfo(audioFilePath);
-        Entries = JsonSerializer.Deserialize(
+        _entries = JsonSerializer.Deserialize(
             File.ReadAllText(jsonFilePath),
             typeof(Dictionary<string, StaticAudioPackDataEntry>),
-            serializerContext) as Dictionary<string, StaticAudioPackDataEntry>;
+            SerializerContext) as Dictionary<string, StaticAudioPackDataEntry>;
         MainBuffer = AudioBuffer.Create(audioDevice);
     }
 
@@ -49,23 +49,23 @@ public class StaticAudioPack : IDisposable {
     ///     Call this after the audio buffer data is loaded.
     /// </summary>
     public void SliceBuffers() {
-        foreach (var (name, dataEntry) in Entries)
-            AudioBuffers[name] = MainBuffer.Slice(dataEntry.Start, (uint)dataEntry.Length);
+        foreach (var (name, dataEntry) in _entries)
+            _audioBuffers[name] = MainBuffer.Slice(dataEntry.Start, (uint)dataEntry.Length);
     }
 
     public AudioBuffer GetAudioBuffer(string name) {
-        return AudioBuffers[name];
+        return _audioBuffers[name];
     }
 
     protected virtual void Dispose(bool disposing) {
-        if (!IsDisposed) {
+        if (!_isDisposed) {
             if (disposing) {
-                foreach (var sound in AudioBuffers.Values) sound.Dispose();
+                foreach (var sound in _audioBuffers.Values) sound.Dispose();
 
                 MainBuffer.Dispose();
             }
 
-            IsDisposed = true;
+            _isDisposed = true;
         }
     }
 

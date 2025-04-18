@@ -5,10 +5,7 @@ using Tactician.Messages;
 
 namespace Tactician.Systems;
 
-public class SetSpriteAnimationSystem : MoonTools.ECS.System {
-    public SetSpriteAnimationSystem(World world) : base(world) {
-    }
-
+public class SetSpriteAnimationSystem(World world) : MoonTools.ECS.System(world) {
     public override void Update(TimeSpan delta) {
         foreach (var message in ReadMessages<SetAnimationMessage>())
             if (Has<SpriteAnimation>(message.Entity)) {

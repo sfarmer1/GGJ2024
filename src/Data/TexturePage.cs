@@ -9,10 +9,10 @@ public readonly record struct TexturePageID(int ID);
 
 public class TexturePage {
     private static readonly List<TexturePage> IDLookup = new();
-    private readonly Dictionary<string, SpriteAnimationInfo> animationInfos = new();
+    private readonly Dictionary<string, SpriteAnimationInfo> _animationInfos = new();
     public readonly TexturePageID ID;
 
-    private readonly Dictionary<string, Sprite> sprites = new();
+    private readonly Dictionary<string, Sprite> _sprites = new();
 
     public TexturePage(string jsonFilename) {
         lock (IDLookup) {
@@ -50,7 +50,7 @@ public class TexturePage {
                 spriteAnimation.YOrigin
             );
 
-            animationInfos.Add(name, spriteAnimationInfo);
+            _animationInfos.Add(name, spriteAnimationInfo);
         }
 
         Texture = Texture.Create2D(
@@ -90,14 +90,14 @@ public class TexturePage {
         };
         var sprite = new Sprite(this, sliceRect, frameRect);
 
-        sprites.Add(imageData.Name, sprite);
+        _sprites.Add(imageData.Name, sprite);
     }
 
     public SpriteAnimationInfo GetSpriteAnimationInfo(string name) {
-        return animationInfos[name];
+        return _animationInfos[name];
     }
 
     public Sprite GetSprite(string name) {
-        return sprites[name];
+        return _sprites[name];
     }
 }

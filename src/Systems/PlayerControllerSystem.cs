@@ -6,18 +6,17 @@ using Tactician.Components;
 using Tactician.Content;
 using Tactician.Data;
 using Tactician.Messages;
-using Tactician.Relations;
 using Tactician.Utility;
 using Filter = MoonTools.ECS.Filter;
 
 namespace Tactician.Systems;
 
 public class PlayerControllerSystem : MoonTools.ECS.System {
-    private readonly float MaxSpeedBase = 128f;
-    private readonly Filter PlayerFilter;
+    private readonly float _maxSpeedBase = 128f;
+    private readonly Filter _playerFilter;
 
     public PlayerControllerSystem(World world) : base(world) {
-        PlayerFilter =
+        _playerFilter =
             FilterBuilder
                 .Include<Player>()
                 .Include<Position>()
@@ -62,7 +61,7 @@ public class PlayerControllerSystem : MoonTools.ECS.System {
 
         var deltaTime = (float)delta.TotalSeconds;
 
-        foreach (var entity in PlayerFilter.Entities) {
+        foreach (var entity in _playerFilter.Entities) {
             var playerIndex = Get<Player>(entity).Index;
             var direction = Vector2.Zero;
 
@@ -108,7 +107,7 @@ public class PlayerControllerSystem : MoonTools.ECS.System {
                 if (dot < 0) Set(entity, new CanFunnyRun());
 
                 if (Has<CanFunnyRun>(entity)) {
-                    maxSpeed = (maxSpeed + MaxSpeedBase) / 2f;
+                    maxSpeed = (maxSpeed + _maxSpeedBase) / 2f;
                     Remove<CanFunnyRun>(entity);
                     Set(entity, new FunnyRunTimer(.25f));
                 }
@@ -127,41 +126,12 @@ public class PlayerControllerSystem : MoonTools.ECS.System {
                 var speed = Get<Velocity>(entity).Value.Length();
                 speed = Math.Max(speed - accelSpeed * deltaTime * 60, 0);
                 velocity = MathUtilities.SafeNormalize(velocity) * speed;
-                Set(entity, new MaxSpeed(MaxSpeedBase));
+                Set(entity, new MaxSpeed(_maxSpeedBase));
             }
-
-            // #region walking sfx
-            // if (!HasOutRelation<TimingFootstepAudio>(entity) && framerate > 0)
-            // {
-            // 	PlayRandomFootstep();
-
-            // 	var footstepTimer = World.CreateEntity();
-            // 	var footstepDuration = Math.Clamp(1f - (framerate / 50f), .5f, 1f);
-            // 	Set(footstepTimer, new Timer(footstepDuration));
-            // 	World.Relate(entity, footstepTimer, new TimingFootstepAudio());
-            // }
-            // #endregion
 
             Set(entity, new Velocity(velocity));
             var depth = float.Lerp(100, 10, Get<Position>(entity).Y / (float)Dimensions.GAME_H);
             Set(entity, new Depth(depth));
         }
-    }
-
-    private void PlayRandomFootstep() {
-        Send(
-            new PlayStaticSoundMessage(
-                new[] {
-                    StaticAudio.Footstep1,
-                    StaticAudio.Footstep2,
-                    StaticAudio.Footstep3,
-                    StaticAudio.Footstep4,
-                    StaticAudio.Footstep5
-                }.GetRandomItem(),
-                SoundCategory.Generic,
-                Rando.Range(0.66f, 0.88f),
-                Rando.Range(-.05f, .05f)
-            )
-        );
     }
 }

@@ -8,17 +8,17 @@ using Tactician.Messages;
 namespace Tactician.Systems;
 
 public class DirectionalAnimationSystem : MoonTools.ECS.System {
-    private readonly Filter DirectionFilter;
+    private readonly Filter _directionFilter;
 
     public DirectionalAnimationSystem(World world) : base(world) {
-        DirectionFilter = FilterBuilder
+        _directionFilter = FilterBuilder
             .Include<LastDirection>()
             .Include<DirectionalSprites>()
             .Build();
     }
 
     public override void Update(TimeSpan delta) {
-        foreach (var entity in DirectionFilter.Entities) {
+        foreach (var entity in _directionFilter.Entities) {
             var direction = Get<LastDirection>(entity).Direction;
             var animations = Get<DirectionalSprites>(entity);
 

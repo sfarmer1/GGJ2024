@@ -7,16 +7,16 @@ using Filter = MoonTools.ECS.Filter;
 namespace Tactician.Systems;
 
 public class ColorAnimationSystem : MoonTools.ECS.System {
-    private readonly Filter ColorAnimationFilter;
+    private readonly Filter _colorAnimationFilter;
 
     public ColorAnimationSystem(World world) : base(world) {
-        ColorAnimationFilter = FilterBuilder.Include<ColorBlend>().Include<ColorSpeed>().Build();
+        _colorAnimationFilter = FilterBuilder.Include<ColorBlend>().Include<ColorSpeed>().Build();
     }
 
     public override void Update(TimeSpan delta) {
         var dt = (float)delta.TotalSeconds;
 
-        foreach (var colorAnimationEntity in ColorAnimationFilter.Entities) {
+        foreach (var colorAnimationEntity in _colorAnimationFilter.Entities) {
             var color = Get<ColorBlend>(colorAnimationEntity).Color;
             var colorSpeed = Get<ColorSpeed>(colorAnimationEntity);
 

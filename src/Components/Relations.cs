@@ -1,4 +1,4 @@
-namespace Tactician.Relations;
+namespace Tactician.Components;
 
 public readonly record struct Colliding;
 

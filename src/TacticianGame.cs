@@ -8,11 +8,7 @@ using Tactician.GameStates;
 namespace Tactician;
 
 public class TacticianGame : Game {
-    private readonly GameplayState GameplayState;
-    private readonly HowToPlayState HowToPlayState;
-    private readonly LoadState LoadState;
-
-    private GameState CurrentState;
+    private GameState _currentState;
 
     public TacticianGame(
         WindowCreateInfo windowCreateInfo,
@@ -27,13 +23,12 @@ public class TacticianGame : Game {
         StreamingAudio.Init(AudioDevice);
         Fonts.LoadAll(GraphicsDevice);
 
-        GameplayState = new GameplayState(this, null);
-        LoadState = new LoadState(this, GameplayState);
+        var gameplayState = new GameplayState(this, null);
+        var loadState = new LoadState(this, gameplayState);
+        var howToPlayState = new HowToPlayState(this, gameplayState);
+        gameplayState.SetTransitionState(howToPlayState); // i hate this
 
-        HowToPlayState = new HowToPlayState(this, GameplayState);
-        GameplayState.SetTransitionState(HowToPlayState); // i hate this
-
-        SetState(LoadState);
+        SetState(loadState);
     }
 
     protected override void Update(TimeSpan dt) {
@@ -44,20 +39,20 @@ public class TacticianGame : Game {
                 MainWindow.SetScreenMode(ScreenMode.Fullscreen);
         }
 
-        CurrentState.Update(dt);
+        _currentState.Update(dt);
     }
 
     protected override void Draw(double alpha) {
-        CurrentState.Draw(MainWindow, alpha);
+        _currentState.Draw(MainWindow, alpha);
     }
 
     protected override void Destroy() {
     }
 
     public void SetState(GameState gameState) {
-        if (CurrentState != null) CurrentState.End();
+        if (_currentState != null) _currentState.End();
 
         gameState.Start();
-        CurrentState = gameState;
+        _currentState = gameState;
     }
 }

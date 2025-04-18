@@ -6,33 +6,32 @@ using Tactician.Components;
 using Tactician.Content;
 using Tactician.Data;
 using Tactician.Messages;
-using Tactician.Relations;
 using Tactician.Utility;
 
 namespace Tactician.Systems;
 
 public class UpdateSpriteAnimationSystem : MoonTools.ECS.System {
-    private readonly Filter FlickerFilter;
-    private readonly Filter SlowDownAnimationFilter;
-    private readonly Filter SpriteAnimationFilter;
-    private readonly Filter TextFilter;
+    private readonly Filter _flickerFilter;
+    private readonly Filter _slowDownAnimationFilter;
+    private readonly Filter _spriteAnimationFilter;
+    private readonly Filter _textFilter;
 
     public UpdateSpriteAnimationSystem(World world) : base(world) {
-        SpriteAnimationFilter = FilterBuilder
+        _spriteAnimationFilter = FilterBuilder
             .Include<SpriteAnimation>()
             .Include<Position>()
             .Build();
-        FlickerFilter = FilterBuilder.Include<ColorFlicker>().Build();
-        TextFilter = FilterBuilder.Include<Text>().Build();
-        SlowDownAnimationFilter = FilterBuilder.Include<SlowDownAnimation>().Include<Position>().Build();
+        _flickerFilter = FilterBuilder.Include<ColorFlicker>().Build();
+        _textFilter = FilterBuilder.Include<Text>().Build();
+        _slowDownAnimationFilter = FilterBuilder.Include<SlowDownAnimation>().Include<Position>().Build();
     }
 
     public override void Update(TimeSpan delta) {
-        foreach (var entity in SpriteAnimationFilter.Entities) UpdateSpriteAnimation(entity, (float)delta.TotalSeconds);
+        foreach (var entity in _spriteAnimationFilter.Entities) UpdateSpriteAnimation(entity, (float)delta.TotalSeconds);
 
 
         // Slows down item animation
-        foreach (var entity in SlowDownAnimationFilter.Entities) {
+        foreach (var entity in _slowDownAnimationFilter.Entities) {
             var c = Get<SlowDownAnimation>(entity);
             var goal = c.BaseSpeed;
             var step = c.step;
@@ -43,14 +42,14 @@ public class UpdateSpriteAnimationSystem : MoonTools.ECS.System {
         }
 
         // Flicker
-        foreach (var entity in FlickerFilter.Entities) {
+        foreach (var entity in _flickerFilter.Entities) {
             var flicker = Get<ColorFlicker>(entity);
             var frames = flicker.ElapsedFrames + 1;
             Set(entity, new ColorFlicker(frames, flicker.Color));
         }
 
         // Score screen text
-        foreach (var entity in TextFilter.Entities)
+        foreach (var entity in _textFilter.Entities)
             if (HasOutRelation<CountUpScore>(entity) && !HasOutRelation<DontDraw>(entity)) {
                 var timerEntity = OutRelationSingleton<CountUpScore>(entity);
                 var timeFactor = 1 - Get<Timer>(timerEntity).Remaining;

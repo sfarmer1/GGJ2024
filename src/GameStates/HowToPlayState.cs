@@ -4,62 +4,63 @@ using MoonWorks;
 using MoonWorks.Audio;
 using MoonWorks.Graphics;
 using Tactician.Content;
+using Tactician.Graphics;
 
 namespace Tactician.GameStates;
 
 public class HowToPlayState : GameState {
-    private readonly AudioDevice AudioDevice;
-    private readonly TacticianGame Game;
-    private readonly GraphicsDevice GraphicsDevice;
+    private readonly AudioDevice _audioDevice;
+    private readonly TacticianGame _game;
+    private readonly GraphicsDevice _graphicsDevice;
 
-    private readonly SpriteBatch HiResSpriteBatch;
-    private readonly Sampler LinearSampler;
-    private readonly Texture RenderTexture;
-    private readonly GameState TransitionState;
+    private readonly SpriteBatch _hiResSpriteBatch;
+    private readonly Sampler _linearSampler;
+    private readonly Texture _renderTexture;
+    private readonly GameState _transitionState;
 
-    private StreamingVoice Voice;
+    private StreamingVoice _voice;
 
     public HowToPlayState(TacticianGame game, GameState transitionState) {
-        AudioDevice = game.AudioDevice;
-        Game = game;
-        GraphicsDevice = game.GraphicsDevice;
-        TransitionState = transitionState;
+        _audioDevice = game.AudioDevice;
+        _game = game;
+        _graphicsDevice = game.GraphicsDevice;
+        _transitionState = transitionState;
 
-        LinearSampler = Sampler.Create(GraphicsDevice, SamplerCreateInfo.LinearClamp);
-        HiResSpriteBatch = new SpriteBatch(GraphicsDevice, game.MainWindow.SwapchainFormat);
+        _linearSampler = Sampler.Create(_graphicsDevice, SamplerCreateInfo.LinearClamp);
+        _hiResSpriteBatch = new SpriteBatch(_graphicsDevice, game.MainWindow.SwapchainFormat);
 
-        RenderTexture = Texture.Create2D(GraphicsDevice, Dimensions.GAME_W, Dimensions.GAME_H,
+        _renderTexture = Texture.Create2D(_graphicsDevice, Dimensions.GAME_W, Dimensions.GAME_H,
             game.MainWindow.SwapchainFormat, TextureUsageFlags.ColorTarget | TextureUsageFlags.Sampler);
     }
 
     public override void Start() {
         var sound = StreamingAudio.Lookup(StreamingAudio.tutorial_type_beat);
-        if (Voice == null) {
-            Voice = AudioDevice.Obtain<StreamingVoice>(sound.Format);
-            Voice.Loop = true;
+        if (_voice == null) {
+            _voice = _audioDevice.Obtain<StreamingVoice>(sound.Format);
+            _voice.Loop = true;
         }
 
         sound.Seek(0);
-        Voice.Load(sound);
-        Voice.SetVolume(0.0f); // TODO: Re-enable audio
-        Voice.Play();
+        _voice.Load(sound);
+        _voice.SetVolume(0.0f); // TODO: Re-enable audio
+        _voice.Play();
     }
 
     public override void Update(TimeSpan delta) {
-        if (Game.Inputs.AnyPressed) Game.SetState(TransitionState);
+        if (_game.Inputs.AnyPressed) _game.SetState(_transitionState);
     }
 
     public override void Draw(Window window, double alpha) {
-        var commandBuffer = GraphicsDevice.AcquireCommandBuffer();
+        var commandBuffer = _graphicsDevice.AcquireCommandBuffer();
 
         var swapchainTexture = commandBuffer.AcquireSwapchainTexture(window);
 
         if (swapchainTexture != null) {
-            HiResSpriteBatch.Start();
+            _hiResSpriteBatch.Start();
 
             var logoAnimation = SpriteAnimations.Screen_HowToPlay;
             var sprite = logoAnimation.Frames[0];
-            HiResSpriteBatch.Add(
+            _hiResSpriteBatch.Add(
                 new Vector3(0, 0, -1f),
                 0,
                 new Vector2(sprite.SliceRect.W, sprite.SliceRect.H),
@@ -67,30 +68,30 @@ public class HowToPlayState : GameState {
                 sprite.UV.LeftTop, sprite.UV.Dimensions
             );
 
-            HiResSpriteBatch.Upload(commandBuffer);
+            _hiResSpriteBatch.Upload(commandBuffer);
 
-            var renderPass = commandBuffer.BeginRenderPass(new ColorTargetInfo(RenderTexture, Color.Black));
+            var renderPass = commandBuffer.BeginRenderPass(new ColorTargetInfo(_renderTexture, Color.Black));
 
             var hiResViewProjectionMatrices =
                 new ViewProjectionMatrices(Matrix4x4.Identity, GetHiResProjectionMatrix());
 
-            HiResSpriteBatch.Render(
+            _hiResSpriteBatch.Render(
                 renderPass,
                 TextureAtlases.TP_HiRes.Texture,
-                LinearSampler,
+                _linearSampler,
                 hiResViewProjectionMatrices
             );
 
             commandBuffer.EndRenderPass(renderPass);
 
-            commandBuffer.Blit(RenderTexture, swapchainTexture, Filter.Nearest);
+            commandBuffer.Blit(_renderTexture, swapchainTexture, Filter.Nearest);
         }
 
-        GraphicsDevice.Submit(commandBuffer);
+        _graphicsDevice.Submit(commandBuffer);
     }
 
     public override void End() {
-        Voice.Stop();
+        _voice.Stop();
     }
 
     private Matrix4x4 GetHiResProjectionMatrix() {

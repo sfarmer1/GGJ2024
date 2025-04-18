@@ -2,7 +2,7 @@ using MoonWorks.Graphics.Font;
 using Tactician.Content;
 using Tactician.Data;
 
-namespace Tactician;
+namespace Tactician.Components;
 
 public struct Text {
     public FontID FontID { get; }

@@ -22,43 +22,38 @@ public class ControlSet {
 }
 
 public class InputSystem : MoonTools.ECS.System {
-    private readonly ControlSet PlayerOneGamepad = new();
-
-    private readonly ControlSet PlayerOneKeyboard = new();
-    private readonly ControlSet PlayerTwoGamepad = new();
-    private readonly ControlSet PlayerTwoKeyboard = new();
-
-    private GameLoopManipulator GameLoopManipulator;
+    private readonly ControlSet _playerOneGamepad = new();
+    private readonly ControlSet _playerOneKeyboard = new();
+    private readonly ControlSet _playerTwoGamepad = new();
+    private readonly ControlSet _playerTwoKeyboard = new();
 
     public InputSystem(World world, Inputs inputs) : base(world) {
         Inputs = inputs;
         PlayerFilter = FilterBuilder.Include<Player>().Build();
 
-        GameLoopManipulator = new GameLoopManipulator(world);
+        _playerOneKeyboard.Up = Inputs.Keyboard.Button(KeyCode.W);
+        _playerOneKeyboard.Down = Inputs.Keyboard.Button(KeyCode.S);
+        _playerOneKeyboard.Left = Inputs.Keyboard.Button(KeyCode.A);
+        _playerOneKeyboard.Right = Inputs.Keyboard.Button(KeyCode.D);
+        _playerOneKeyboard.Interact = Inputs.Keyboard.Button(KeyCode.Space);
 
-        PlayerOneKeyboard.Up = Inputs.Keyboard.Button(KeyCode.W);
-        PlayerOneKeyboard.Down = Inputs.Keyboard.Button(KeyCode.S);
-        PlayerOneKeyboard.Left = Inputs.Keyboard.Button(KeyCode.A);
-        PlayerOneKeyboard.Right = Inputs.Keyboard.Button(KeyCode.D);
-        PlayerOneKeyboard.Interact = Inputs.Keyboard.Button(KeyCode.Space);
+        _playerOneGamepad.Up = Inputs.GetGamepad(0).LeftYDown;
+        _playerOneGamepad.Down = Inputs.GetGamepad(0).LeftYUp;
+        _playerOneGamepad.Left = Inputs.GetGamepad(0).LeftXLeft;
+        _playerOneGamepad.Right = Inputs.GetGamepad(0).LeftXRight;
+        _playerOneGamepad.Interact = Inputs.GetGamepad(0).A;
 
-        PlayerOneGamepad.Up = Inputs.GetGamepad(0).LeftYDown;
-        PlayerOneGamepad.Down = Inputs.GetGamepad(0).LeftYUp;
-        PlayerOneGamepad.Left = Inputs.GetGamepad(0).LeftXLeft;
-        PlayerOneGamepad.Right = Inputs.GetGamepad(0).LeftXRight;
-        PlayerOneGamepad.Interact = Inputs.GetGamepad(0).A;
+        _playerTwoKeyboard.Up = Inputs.Keyboard.Button(KeyCode.Up);
+        _playerTwoKeyboard.Down = Inputs.Keyboard.Button(KeyCode.Down);
+        _playerTwoKeyboard.Left = Inputs.Keyboard.Button(KeyCode.Left);
+        _playerTwoKeyboard.Right = Inputs.Keyboard.Button(KeyCode.Right);
+        _playerTwoKeyboard.Interact = Inputs.Keyboard.Button(KeyCode.Return);
 
-        PlayerTwoKeyboard.Up = Inputs.Keyboard.Button(KeyCode.Up);
-        PlayerTwoKeyboard.Down = Inputs.Keyboard.Button(KeyCode.Down);
-        PlayerTwoKeyboard.Left = Inputs.Keyboard.Button(KeyCode.Left);
-        PlayerTwoKeyboard.Right = Inputs.Keyboard.Button(KeyCode.Right);
-        PlayerTwoKeyboard.Interact = Inputs.Keyboard.Button(KeyCode.Return);
-
-        PlayerTwoGamepad.Up = Inputs.GetGamepad(1).LeftYDown;
-        PlayerTwoGamepad.Down = Inputs.GetGamepad(1).LeftYUp;
-        PlayerTwoGamepad.Left = Inputs.GetGamepad(1).LeftXLeft;
-        PlayerTwoGamepad.Right = Inputs.GetGamepad(1).LeftXRight;
-        PlayerTwoGamepad.Interact = Inputs.GetGamepad(1).A;
+        _playerTwoGamepad.Up = Inputs.GetGamepad(1).LeftYDown;
+        _playerTwoGamepad.Down = Inputs.GetGamepad(1).LeftYUp;
+        _playerTwoGamepad.Left = Inputs.GetGamepad(1).LeftXLeft;
+        _playerTwoGamepad.Right = Inputs.GetGamepad(1).LeftXRight;
+        _playerTwoGamepad.Interact = Inputs.GetGamepad(1).A;
     }
 
     private Inputs Inputs { get; }
@@ -68,8 +63,8 @@ public class InputSystem : MoonTools.ECS.System {
     public override void Update(TimeSpan timeSpan) {
         foreach (var playerEntity in PlayerFilter.Entities) {
             var index = Get<Player>(playerEntity).Index;
-            var controlSet = index == 0 ? PlayerOneKeyboard : PlayerTwoKeyboard;
-            var altControlSet = index == 0 ? PlayerOneGamepad : PlayerTwoGamepad;
+            var controlSet = index == 0 ? _playerOneKeyboard : _playerTwoKeyboard;
+            var altControlSet = index == 0 ? _playerOneGamepad : _playerTwoGamepad;
 
             var inputState = InputState(controlSet, altControlSet);
 

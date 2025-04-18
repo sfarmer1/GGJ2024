@@ -1,8 +1,8 @@
 namespace Tactician.Utility;
 
 public ref struct IntegerEnumerator {
-    private readonly int End;
-    private readonly int Increment;
+    private readonly int _end;
+    private readonly int _increment;
 
     public IntegerEnumerator GetEnumerator() {
         return this;
@@ -10,13 +10,13 @@ public ref struct IntegerEnumerator {
 
     public IntegerEnumerator(int start, int end) {
         Current = start;
-        End = end;
+        _end = end;
         if (end >= start)
-            Increment = 1;
+            _increment = 1;
         else if (end < start)
-            Increment = -1;
+            _increment = -1;
         else
-            Increment = 0;
+            _increment = 0;
     }
 
     // does not include a, but does include b.
@@ -25,8 +25,8 @@ public ref struct IntegerEnumerator {
     }
 
     public bool MoveNext() {
-        Current += Increment;
-        return (Increment > 0 && Current <= End) || (Increment < 0 && Current >= End);
+        Current += _increment;
+        return (_increment > 0 && Current <= _end) || (_increment < 0 && Current >= _end);
     }
 
     public int Current { get; private set; }

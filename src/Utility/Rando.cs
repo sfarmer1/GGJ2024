@@ -23,9 +23,7 @@ public static class Rando {
     public static void Shuffle<T>(this T[] arr) {
         for (var i = arr.Length - 1; i >= 1; i--) {
             var j = IntInclusive(0, i);
-            var other = arr[j];
-            arr[j] = arr[i];
-            arr[i] = other;
+            (arr[j], arr[i]) = (arr[i], arr[j]);
         }
     }
 

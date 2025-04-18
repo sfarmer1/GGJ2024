@@ -6,44 +6,43 @@ using MoonWorks.Graphics.Font;
 using Tactician.Components;
 using Tactician.Content;
 using Tactician.Data;
-using Tactician.Relations;
 using Filter = MoonTools.ECS.Filter;
 
-namespace Tactician;
+namespace Tactician.Graphics;
 
 public class Renderer : MoonTools.ECS.Renderer {
-    private readonly SpriteBatch ArtSpriteBatch;
-    private readonly Texture DepthTexture;
-    private readonly GraphicsDevice GraphicsDevice;
+    private readonly SpriteBatch _artSpriteBatch;
+    private readonly Texture _depthTexture;
+    private readonly GraphicsDevice _graphicsDevice;
 
-    private readonly Sampler PointSampler;
+    private readonly Sampler _pointSampler;
 
-    private readonly Filter RectangleFilter;
+    private readonly Filter _rectangleFilter;
 
-    private readonly Texture RenderTexture;
-    private readonly Filter SpriteAnimationFilter;
+    private readonly Texture _renderTexture;
+    private readonly Filter _spriteAnimationFilter;
 
-    private readonly Texture SpriteAtlasTexture;
-    private readonly TextBatch TextBatch;
-    private readonly Filter TextFilter;
-    private readonly GraphicsPipeline TextPipeline;
+    private readonly Texture _spriteAtlasTexture;
+    private readonly TextBatch _textBatch;
+    private readonly Filter _textFilter;
+    private readonly GraphicsPipeline _textPipeline;
 
     public Renderer(World world, GraphicsDevice graphicsDevice, TextureFormat swapchainFormat) : base(world) {
-        GraphicsDevice = graphicsDevice;
+        _graphicsDevice = graphicsDevice;
 
-        RectangleFilter = FilterBuilder.Include<Rectangle>().Include<Position>().Include<DrawAsRectangle>().Build();
-        TextFilter = FilterBuilder.Include<Text>().Include<Position>().Build();
-        SpriteAnimationFilter = FilterBuilder.Include<SpriteAnimation>().Include<Position>().Build();
+        _rectangleFilter = FilterBuilder.Include<Rectangle>().Include<Position>().Include<DrawAsRectangle>().Build();
+        _textFilter = FilterBuilder.Include<Text>().Include<Position>().Build();
+        _spriteAnimationFilter = FilterBuilder.Include<SpriteAnimation>().Include<Position>().Build();
 
-        RenderTexture = Texture.Create2D(GraphicsDevice, "Render Texture", Dimensions.GAME_W, Dimensions.GAME_H,
+        _renderTexture = Texture.Create2D(_graphicsDevice, "Render Texture", Dimensions.GAME_W, Dimensions.GAME_H,
             swapchainFormat, TextureUsageFlags.ColorTarget | TextureUsageFlags.Sampler);
-        DepthTexture = Texture.Create2D(GraphicsDevice, "Depth Texture", Dimensions.GAME_W, Dimensions.GAME_H,
+        _depthTexture = Texture.Create2D(_graphicsDevice, "Depth Texture", Dimensions.GAME_W, Dimensions.GAME_H,
             TextureFormat.D16Unorm, TextureUsageFlags.DepthStencilTarget);
 
-        SpriteAtlasTexture = TextureAtlases.TP_Sprites.Texture;
+        _spriteAtlasTexture = TextureAtlases.TP_Sprites.Texture;
 
-        TextPipeline = GraphicsPipeline.Create(
-            GraphicsDevice,
+        _textPipeline = GraphicsPipeline.Create(
+            _graphicsDevice,
             new GraphicsPipelineCreateInfo {
                 TargetInfo = new GraphicsPipelineTargetInfo {
                     DepthStencilFormat = TextureFormat.D16Unorm,
@@ -60,31 +59,31 @@ public class Renderer : MoonTools.ECS.Renderer {
                     EnableDepthWrite = true,
                     CompareOp = CompareOp.LessOrEqual
                 },
-                VertexShader = GraphicsDevice.TextVertexShader,
-                FragmentShader = GraphicsDevice.TextFragmentShader,
-                VertexInputState = GraphicsDevice.TextVertexInputState,
+                VertexShader = _graphicsDevice.TextVertexShader,
+                FragmentShader = _graphicsDevice.TextFragmentShader,
+                VertexInputState = _graphicsDevice.TextVertexInputState,
                 RasterizerState = RasterizerState.CCW_CullNone,
                 PrimitiveType = PrimitiveType.TriangleList,
                 MultisampleState = MultisampleState.None,
                 Name = "Text Pipeline"
             }
         );
-        TextBatch = new TextBatch(GraphicsDevice);
+        _textBatch = new TextBatch(_graphicsDevice);
 
-        PointSampler = Sampler.Create(GraphicsDevice, SamplerCreateInfo.PointClamp);
+        _pointSampler = Sampler.Create(_graphicsDevice, SamplerCreateInfo.PointClamp);
 
-        ArtSpriteBatch = new SpriteBatch(GraphicsDevice, swapchainFormat, TextureFormat.D16Unorm);
+        _artSpriteBatch = new SpriteBatch(_graphicsDevice, swapchainFormat, TextureFormat.D16Unorm);
     }
 
     public void Render(Window window) {
-        var commandBuffer = GraphicsDevice.AcquireCommandBuffer();
+        var commandBuffer = _graphicsDevice.AcquireCommandBuffer();
 
         var swapchainTexture = commandBuffer.AcquireSwapchainTexture(window);
 
         if (swapchainTexture != null) {
-            ArtSpriteBatch.Start();
+            _artSpriteBatch.Start();
 
-            foreach (var entity in RectangleFilter.Entities) {
+            foreach (var entity in _rectangleFilter.Entities) {
                 var position = Get<Position>(entity);
                 var rectangle = Get<Rectangle>(entity);
                 var orientation = Has<Orientation>(entity) ? Get<Orientation>(entity).Angle : 0.0f;
@@ -93,11 +92,11 @@ public class Renderer : MoonTools.ECS.Renderer {
                 if (Has<Depth>(entity)) depth = -Get<Depth>(entity).Value;
 
                 var sprite = SpriteAnimations.Pixel.Frames[0];
-                ArtSpriteBatch.Add(new Vector3(position.X + rectangle.X, position.Y + rectangle.Y, depth), orientation,
+                _artSpriteBatch.Add(new Vector3(position.X + rectangle.X, position.Y + rectangle.Y, depth), orientation,
                     new Vector2(rectangle.Width, rectangle.Height), color, sprite.UV.LeftTop, sprite.UV.Dimensions);
             }
 
-            foreach (var entity in SpriteAnimationFilter.Entities) {
+            foreach (var entity in _spriteAnimationFilter.Entities) {
                 if (HasOutRelation<DontDraw>(entity))
                     continue;
 
@@ -125,13 +124,13 @@ public class Renderer : MoonTools.ECS.Renderer {
 
                 if (Has<Depth>(entity)) depth = -Get<Depth>(entity).Value;
 
-                ArtSpriteBatch.Add(new Vector3(position.X + offset.X, position.Y + offset.Y, depth), 0,
+                _artSpriteBatch.Add(new Vector3(position.X + offset.X, position.Y + offset.Y, depth), 0,
                     new Vector2(sprite.SliceRect.W, sprite.SliceRect.H) * scale, color, sprite.UV.LeftTop,
                     sprite.UV.Dimensions);
             }
 
-            TextBatch.Start();
-            foreach (var entity in TextFilter.Entities) {
+            _textBatch.Start();
+            foreach (var entity in _textFilter.Entities) {
                 if (HasOutRelation<DontDraw>(entity))
                     continue;
 
@@ -152,7 +151,7 @@ public class Renderer : MoonTools.ECS.Renderer {
 
                     var dropShadowPosition = position + new Position(dropShadow.OffsetX, dropShadow.OffsetY);
 
-                    TextBatch.Add(
+                    _textBatch.Add(
                         font,
                         str,
                         text.Size,
@@ -163,7 +162,7 @@ public class Renderer : MoonTools.ECS.Renderer {
                     );
                 }
 
-                TextBatch.Add(
+                _textBatch.Add(
                     font,
                     str,
                     text.Size,
@@ -174,28 +173,28 @@ public class Renderer : MoonTools.ECS.Renderer {
                 );
             }
 
-            ArtSpriteBatch.Upload(commandBuffer);
-            TextBatch.UploadBufferData(commandBuffer);
+            _artSpriteBatch.Upload(commandBuffer);
+            _textBatch.UploadBufferData(commandBuffer);
 
             var renderPass = commandBuffer.BeginRenderPass(
-                new DepthStencilTargetInfo(DepthTexture, 1, 0),
-                new ColorTargetInfo(RenderTexture, Color.Black)
+                new DepthStencilTargetInfo(_depthTexture, 1, 0),
+                new ColorTargetInfo(_renderTexture, Color.Black)
             );
 
             var viewProjectionMatrices = new ViewProjectionMatrices(GetCameraMatrix(), GetProjectionMatrix());
 
-            if (ArtSpriteBatch.InstanceCount > 0)
-                ArtSpriteBatch.Render(renderPass, SpriteAtlasTexture, PointSampler, viewProjectionMatrices);
+            if (_artSpriteBatch.InstanceCount > 0)
+                _artSpriteBatch.Render(renderPass, _spriteAtlasTexture, _pointSampler, viewProjectionMatrices);
 
-            renderPass.BindGraphicsPipeline(TextPipeline);
-            TextBatch.Render(renderPass, GetCameraMatrix() * GetProjectionMatrix());
+            renderPass.BindGraphicsPipeline(_textPipeline);
+            _textBatch.Render(renderPass, GetCameraMatrix() * GetProjectionMatrix());
 
             commandBuffer.EndRenderPass(renderPass);
 
-            commandBuffer.Blit(RenderTexture, swapchainTexture, MoonWorks.Graphics.Filter.Nearest);
+            commandBuffer.Blit(_renderTexture, swapchainTexture, MoonWorks.Graphics.Filter.Nearest);
         }
 
-        GraphicsDevice.Submit(commandBuffer);
+        _graphicsDevice.Submit(commandBuffer);
     }
 
     public Matrix4x4 GetCameraMatrix() {

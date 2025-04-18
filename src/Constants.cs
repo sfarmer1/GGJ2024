@@ -1,3 +1,5 @@
+using MoonWorks.Graphics;
+
 namespace Tactician;
 
 public static class Dimensions {

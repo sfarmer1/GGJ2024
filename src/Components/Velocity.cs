@@ -1,5 +1,7 @@
 using System.Numerics;
 
+namespace Tactician.Components;
+
 public readonly record struct Velocity {
     public static Velocity Zero = new(0f, 0f);
     public static Velocity One = new(1f, 1f);

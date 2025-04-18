@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Tactician;
+namespace Tactician.Graphics;
 
 public struct UV {
     public Vector2 Position { get; }

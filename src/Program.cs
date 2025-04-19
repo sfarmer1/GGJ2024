@@ -25,6 +25,7 @@ internal class Program {
 			WindowCreateInfo windowCreateInfo = new WindowCreateInfo
 			{
 				WindowWidth = 1280,
+
 				WindowHeight = 720,
 				WindowTitle = "Tactician",
 				ScreenMode = ScreenMode.Fullscreen

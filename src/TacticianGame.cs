@@ -11,17 +11,18 @@ public class TacticianGame : Game {
     private GameState _currentState;
 
     public TacticianGame(
+        AppInfo appInfo,
         WindowCreateInfo windowCreateInfo,
         FramePacingSettings framePacingSettings,
         ShaderFormat shaderFormats,
         bool debugMode
-    ) : base(windowCreateInfo, framePacingSettings, shaderFormats, debugMode) {
+    ) : base(appInfo, windowCreateInfo, framePacingSettings, shaderFormats, debugMode) {
         Inputs.Mouse.Hide();
 
         TextureAtlases.Init(GraphicsDevice);
         StaticAudioPacks.Init(AudioDevice);
         StreamingAudio.Init(AudioDevice);
-        Fonts.LoadAll(GraphicsDevice);
+        Fonts.LoadAll(GraphicsDevice, RootTitleStorage);
 
         var gameplayState = new GameplayState(this, null);
         var loadState = new LoadState(this, gameplayState);

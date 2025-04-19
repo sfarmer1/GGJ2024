@@ -38,7 +38,7 @@ public class HowToPlayState : GameState {
         if (_musicVoice == null) {
             _music = StreamingAudio.Lookup(StreamingAudio.tutorial_type_beat);
             _music.Loop = true;
-            _musicVoice = AudioDevice.Obtain<PersistentVoice>(_music.Format);
+            _musicVoice = _audioDevice.Obtain<PersistentVoice>(_music.Format);
         }
 
         _music.Seek(0);

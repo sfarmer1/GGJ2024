@@ -6,6 +6,7 @@ The goals of this template are to:
 - Make it easier to get started making games with MoonWorks
 - Provide a bare bones example of how to organize a project with Just Enough structure to get to the fun part quickly
 - Make it easy to rip out the example code and make it your own
+- Make a template that easily runs on on Windows, Linux, and MacOS ARM chips (M1, M2, etc)
 
 NOTE: You will need to run the ContentBuilderUI project first. This will generate the content files necessary to build and run the game.
 

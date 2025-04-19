@@ -1,73 +1,68 @@
 using System;
 using System.IO;
 using MoonWorks;
+using MoonWorks.Graphics;
 
-namespace RollAndCash
-{
-	class Program
-	{
-		public static string UserDataDirectory = $"{Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "ROLLANDCASH")}";
+namespace Tactician;
 
-		static void Main(string[] args)
-		{
-			if (!System.IO.Directory.Exists(UserDataDirectory))
-			{
-				System.IO.Directory.CreateDirectory(UserDataDirectory);
-			}
+internal class Program {
+    public static string UserDataDirectory =
+        $"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Tactician")}";
 
-			AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
+    private static void Main(string[] args) {
+        if (!Directory.Exists(UserDataDirectory)) Directory.CreateDirectory(UserDataDirectory);
+
+        AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
 
 #if DEBUG
-			WindowCreateInfo windowCreateInfo = new WindowCreateInfo
-			{
-				WindowWidth = 1280,
-				WindowHeight = 720,
-				WindowTitle = "ROLL AND CASH: GROCERY LORDS: A LONDON JERRY STORY",
-				ScreenMode = ScreenMode.Windowed
-			};
+        var windowCreateInfo = new WindowCreateInfo {
+            WindowWidth = 1280,
+            WindowHeight = 720,
+            WindowTitle = "Tactician",
+            ScreenMode = ScreenMode.Windowed
+        };
 #else
 			WindowCreateInfo windowCreateInfo = new WindowCreateInfo
 			{
 				WindowWidth = 1280,
+
 				WindowHeight = 720,
-				WindowTitle = "ROLL AND CASH: GROCERY LORDS: A LONDON JERRY STORY",
+				WindowTitle = "Tactician",
 				ScreenMode = ScreenMode.Fullscreen
 			};
 #endif
 
-			FramePacingSettings framePacingSettings = FramePacingSettings.CreateLatencyOptimized(60);
+        var framePacingSettings = FramePacingSettings.CreateLatencyOptimized(60);
 
-			var debugMode = false;
+        var debugMode = false;
 
 #if DEBUG
-			debugMode = true;
+        debugMode = true;
 #endif
 
-			var appInfo = new AppInfo("JerryCrew", "RollAndCash");
-			RollAndCashGame game = new RollAndCashGame(
-				appInfo,
-				windowCreateInfo,
-				framePacingSettings,
-				MoonWorks.Graphics.ShaderFormat.SPIRV | MoonWorks.Graphics.ShaderFormat.DXBC,
-				debugMode
-			);
+		var appInfo = new AppInfo("JerryCrew", "RollAndCash");
+		var game = new TacticianGame(
+			appInfo,
+			windowCreateInfo,
+			framePacingSettings,
+			ShaderFormat.SPIRV | ShaderFormat.DXBC | ShaderFormat.MSL,
+			debugMode
+		);
 
-			game.Run();
-		}
+        game.Run();
+    }
 
-		static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs args)
-		{
-			Exception e = (Exception)args.ExceptionObject;
-			Logger.LogError("Unhandled exception caught!");
-			Logger.LogError(e.ToString());
+    private static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs args) {
+        var e = (Exception)args.ExceptionObject;
+        Logger.LogError("Unhandled exception caught!");
+        Logger.LogError(e.ToString());
 
-			Game.ShowRuntimeError("FLAGRANT SYSTEM ERROR", e.ToString());
+        Game.ShowRuntimeError("FLAGRANT SYSTEM ERROR", e.ToString());
 
-			StreamWriter streamWriter = new StreamWriter(Path.Combine(UserDataDirectory, "log.txt"));
+        var streamWriter = new StreamWriter(Path.Combine(UserDataDirectory, "log.txt"));
 
-			streamWriter.WriteLine(e.ToString());
-			streamWriter.Flush();
-			streamWriter.Close();
-		}
-	}
+        streamWriter.WriteLine(e.ToString());
+        streamWriter.Flush();
+        streamWriter.Close();
+    }
 }

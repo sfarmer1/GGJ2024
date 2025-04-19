@@ -6,90 +6,71 @@ using System.Text.Json.Serialization;
 using MoonWorks.AsyncIO;
 using MoonWorks.Audio;
 
-namespace RollAndCash.Data
-{
-	[JsonSerializable(typeof(Dictionary<string, StaticAudioPackDataEntry>))]
-	internal partial class StaticAudioPackDictionaryContext : JsonSerializerContext
-	{
-	}
+namespace Tactician.Data;
 
-	public class StaticAudioPack : IDisposable
-	{
-		public FileInfo AudioFile { get; private set; }
+[JsonSerializable(typeof(Dictionary<string, StaticAudioPackDataEntry>))]
+internal partial class StaticAudioPackDictionaryContext : JsonSerializerContext {
+}
 
-		public AudioBuffer MainBuffer { get; private set; }
-		private bool IsDisposed;
+public class StaticAudioPack : IDisposable {
+    private static readonly JsonSerializerOptions SerializerOptions = new() {
+        IncludeFields = true
+    };
 
-		private Dictionary<string, StaticAudioPackDataEntry> Entries;
-		private Dictionary<string, AudioBuffer> AudioBuffers = new Dictionary<string, AudioBuffer>();
+    private static readonly StaticAudioPackDictionaryContext SerializerContext = new(SerializerOptions);
+    private readonly Dictionary<string, AudioBuffer> _audioBuffers = new();
 
-		private static JsonSerializerOptions serializerOptions = new JsonSerializerOptions
-		{
-			IncludeFields = true
-		};
+    private Dictionary<string, StaticAudioPackDataEntry> _entries;
+    private bool _isDisposed;
+    public FileInfo AudioFile { get; private set; }
 
-		private static StaticAudioPackDictionaryContext serializerContext = new StaticAudioPackDictionaryContext(serializerOptions);
+    public AudioBuffer MainBuffer { get; private set; }
 
-		public void Init(AudioDevice audioDevice, string audioFilePath, string jsonFilePath)
-		{
-			AudioFile = new FileInfo(audioFilePath);
-			Entries = JsonSerializer.Deserialize(
-				File.ReadAllText(jsonFilePath),
-				typeof(Dictionary<string, StaticAudioPackDataEntry>),
-				serializerContext) as Dictionary<string, StaticAudioPackDataEntry>;
-			MainBuffer = AudioBuffer.Create(audioDevice);
-		}
+    public void Dispose() {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-		public void LoadAsync(AsyncFileLoader loader)
-		{
-			loader.EnqueueWavLoad(AudioFile.FullName, MainBuffer);
-		}
+    public void Init(AudioDevice audioDevice, string audioFilePath, string jsonFilePath) {
+        AudioFile = new FileInfo(audioFilePath);
+        _entries = JsonSerializer.Deserialize(
+            File.ReadAllText(jsonFilePath),
+            typeof(Dictionary<string, StaticAudioPackDataEntry>),
+            SerializerContext) as Dictionary<string, StaticAudioPackDataEntry>;
+        MainBuffer = AudioBuffer.Create(audioDevice);
+    }
 
-		/// <summary>
-		/// Call this after the audio buffer data is loaded.
-		/// </summary>
-		public void SliceBuffers()
-		{
-			foreach (var (name, dataEntry) in Entries)
-			{
-				AudioBuffers[name] = MainBuffer.Slice(dataEntry.Start, (uint)dataEntry.Length);
-			}
-		}
+    public void LoadAsync(AsyncFileLoader loader) {
+        loader.EnqueueWavLoad(AudioFile.FullName, MainBuffer);
+    }
 
-		public AudioBuffer GetAudioBuffer(string name)
-		{
-			return AudioBuffers[name];
-		}
+    /// <summary>
+    ///     Call this after the audio buffer data is loaded.
+    /// </summary>
+    public void SliceBuffers() {
+        foreach (var (name, dataEntry) in _entries)
+            _audioBuffers[name] = MainBuffer.Slice(dataEntry.Start, (uint)dataEntry.Length);
+    }
 
-		protected virtual unsafe void Dispose(bool disposing)
-		{
-			if (!IsDisposed)
-			{
-				if (disposing)
-				{
-					foreach (var sound in AudioBuffers.Values)
-					{
-						sound.Dispose();
-					}
+    public AudioBuffer GetAudioBuffer(string name) {
+        return _audioBuffers[name];
+    }
 
-					MainBuffer.Dispose();
-				}
+    protected virtual void Dispose(bool disposing) {
+        if (!_isDisposed) {
+            if (disposing) {
+                foreach (var sound in _audioBuffers.Values) sound.Dispose();
 
-				IsDisposed = true;
-			}
-		}
+                MainBuffer.Dispose();
+            }
 
-		~StaticAudioPack()
-		{
-			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-			Dispose(disposing: false);
-		}
+            _isDisposed = true;
+        }
+    }
 
-		public void Dispose()
-		{
-			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-			Dispose(disposing: true);
-			GC.SuppressFinalize(this);
-		}
-	}
+    ~StaticAudioPack() {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(false);
+    }
 }

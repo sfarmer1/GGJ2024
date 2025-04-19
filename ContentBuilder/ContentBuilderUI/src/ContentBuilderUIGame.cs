@@ -6,6 +6,8 @@ using System.Numerics;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Reflection.PortableExecutable;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace ContentBuilderUI
@@ -40,7 +42,7 @@ namespace ContentBuilderUI
 			WindowCreateInfo windowCreateInfo,
 			FramePacingSettings frameLimiterSettings,
 			bool debugMode
-		) : base(appInfo, windowCreateInfo, frameLimiterSettings, ShaderFormat.SPIRV, debugMode)
+		) : base(appInfo, windowCreateInfo, frameLimiterSettings, ShaderFormat.SPIRV | ShaderFormat.MSL, debugMode)
 		{
 			Operations.Initialize();
 
@@ -98,31 +100,60 @@ namespace ContentBuilderUI
 			io.DisplaySize = new System.Numerics.Vector2(MainWindow.Width, MainWindow.Height);
 			io.DisplayFramebufferScale = System.Numerics.Vector2.One;
 
-			ImGuiVertexShader = Shader.Create(
-				GraphicsDevice,
-				RootTitleStorage,
-				Path.Combine(ShaderContentPath, "ImGui.vert.spv"),
-				"main",
-				new ShaderCreateInfo
-				{
-					Format = ShaderFormat.SPIRV,
-					Stage = ShaderStage.Vertex,
-					NumUniformBuffers = 1
-				}
-			);
+			
+			
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)){
+				ImGuiVertexShader = Shader.Create(
+					GraphicsDevice,
+					RootTitleStorage,
+					Path.Combine(ShaderContentPath, "ImGui.vert.msl"),
+					"main0",
+					new ShaderCreateInfo
+					{
+						Format = ShaderFormat.MSL,
+						Stage = ShaderStage.Vertex,
+						NumUniformBuffers = 1
+					}
+				);
 
-			ImGuiFragmentShader = Shader.Create(
-				GraphicsDevice,
-				RootTitleStorage,
-				Path.Combine(ShaderContentPath, "ImGui.frag.spv"),
-				"main",
-				new ShaderCreateInfo
-				{
-					Format = ShaderFormat.SPIRV,
-					Stage = ShaderStage.Fragment,
-					NumSamplers = 1
-				}
-			);
+				ImGuiFragmentShader = Shader.Create(
+					GraphicsDevice,
+					RootTitleStorage,
+					Path.Combine(ShaderContentPath, "ImGui.frag.msl"),
+					"main0",
+					new ShaderCreateInfo
+					{
+						Format = ShaderFormat.MSL,
+						Stage = ShaderStage.Fragment,
+						NumSamplers = 1
+					}
+				); 
+			} 
+			else {
+				ImGuiVertexShader = Shader.Create(
+					GraphicsDevice,
+					RootTitleStorage,
+					Path.Combine(ShaderContentPath, "ImGui.vert.spv"),
+					"main",
+					new ShaderCreateInfo {
+						Format = ShaderFormat.SPIRV,
+						Stage = ShaderStage.Vertex,
+						NumUniformBuffers = 1
+					}
+				);
+
+				ImGuiFragmentShader = Shader.Create(
+					GraphicsDevice,
+					RootTitleStorage,
+					Path.Combine(ShaderContentPath, "ImGui.frag.spv"),
+					"main",
+					new ShaderCreateInfo {
+						Format = ShaderFormat.SPIRV,
+						Stage = ShaderStage.Fragment,
+						NumSamplers = 1
+					}
+				);
+			}
 
 			ImGuiSampler = Sampler.Create(GraphicsDevice, SamplerCreateInfo.LinearClamp);
 

@@ -1,243 +1,223 @@
-using MoonWorks.Graphics;
+using System;
+using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using MoonWorks.Graphics;
 using Buffer = MoonWorks.Graphics.Buffer;
 
-namespace RollAndCash;
+namespace Tactician.Graphics;
 
-public class SpriteBatch
-{
-	const int MAX_SPRITE_COUNT = 8192;
+public class SpriteBatch {
+    public uint InstanceCount => (uint)_instanceIndex;
 
-	GraphicsDevice GraphicsDevice;
-	ComputePipeline ComputePipeline;
-	GraphicsPipeline GraphicsPipeline;
+    private const int MAX_SPRITE_COUNT = 8192;
+    private readonly GraphicsDevice _graphicsDevice;
+    private readonly ComputePipeline _computePipeline;
+    private readonly GraphicsPipeline _graphicsPipeline;
+    private readonly Buffer _instanceBuffer;
+    private readonly TransferBuffer _instanceTransferBuffer;
+    private readonly Buffer _quadIndexBuffer;
+    private readonly Buffer _quadVertexBuffer;
 
-	int InstanceIndex;
-	public uint InstanceCount => (uint) InstanceIndex;
-
-	TransferBuffer InstanceTransferBuffer;
-	Buffer InstanceBuffer;
-	Buffer QuadVertexBuffer;
-	Buffer QuadIndexBuffer;
+    private int _instanceIndex;
 
 	public SpriteBatch(GraphicsDevice graphicsDevice, MoonWorks.Storage.TitleStorage titleStorage, TextureFormat renderTextureFormat, TextureFormat? depthTextureFormat = null)
 	{
-		GraphicsDevice = graphicsDevice;
+		_graphicsDevice = graphicsDevice;
 
         var shaderContentPath = System.IO.Path.Combine(
             "Content",
 			"Shaders"
         );
 
-        ComputePipeline = ShaderCross.Create(GraphicsDevice, titleStorage, System.IO.Path.Combine(shaderContentPath, "SpriteBatch.comp.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV);
+        _computePipeline = ShaderCross.Create(_graphicsDevice, titleStorage, System.IO.Path.Combine(shaderContentPath, "SpriteBatch.comp.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV);
 
-		var vertShader = ShaderCross.Create(GraphicsDevice, titleStorage, System.IO.Path.Combine(shaderContentPath, "SpriteBatch.vert.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV, ShaderStage.Vertex);
-		var fragShader = ShaderCross.Create(GraphicsDevice, titleStorage, System.IO.Path.Combine(shaderContentPath, "SpriteBatch.frag.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV, ShaderStage.Fragment);
+		var vertShader = ShaderCross.Create(_graphicsDevice, titleStorage, System.IO.Path.Combine(shaderContentPath, "SpriteBatch.vert.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV, ShaderStage.Vertex);
+		var fragShader = ShaderCross.Create(_graphicsDevice, titleStorage, System.IO.Path.Combine(shaderContentPath, "SpriteBatch.frag.hlsl.spv"), "main", ShaderCross.ShaderFormat.SPIRV, ShaderStage.Fragment);
 
-		var createInfo = new GraphicsPipelineCreateInfo
-		{
-			TargetInfo = new GraphicsPipelineTargetInfo
-			{
-				ColorTargetDescriptions = [
-					new ColorTargetDescription
-					{
-						Format = renderTextureFormat,
-						BlendState = ColorTargetBlendState.NonPremultipliedAlphaBlend
-					}
-				]
-			},
-			DepthStencilState = DepthStencilState.Disable,
-			MultisampleState = MultisampleState.None,
-			PrimitiveType = PrimitiveType.TriangleList,
-			RasterizerState = RasterizerState.CCW_CullNone,
-			VertexInputState = VertexInputState.CreateSingleBinding<PositionTextureColorVertex>(),
-			VertexShader = vertShader,
-			FragmentShader = fragShader,
-			Name = "SpriteBatch Pipeline"
-		};
+        var createInfo = new GraphicsPipelineCreateInfo {
+            TargetInfo = new GraphicsPipelineTargetInfo {
+                ColorTargetDescriptions = [
+                    new ColorTargetDescription {
+                        Format = renderTextureFormat,
+                        BlendState = ColorTargetBlendState.NonPremultipliedAlphaBlend
+                    }
+                ]
+            },
+            DepthStencilState = DepthStencilState.Disable,
+            MultisampleState = MultisampleState.None,
+            PrimitiveType = PrimitiveType.TriangleList,
+            RasterizerState = RasterizerState.CCW_CullNone,
+            VertexInputState = VertexInputState.CreateSingleBinding<PositionTextureColorVertex>(),
+            VertexShader = vertShader,
+            FragmentShader = fragShader,
+            Name = "SpriteBatch Pipeline"
+        };
 
-		if (depthTextureFormat.HasValue)
-		{
-			createInfo.TargetInfo.DepthStencilFormat = depthTextureFormat.Value;
-			createInfo.TargetInfo.HasDepthStencilTarget = true;
+        if (depthTextureFormat.HasValue) {
+            createInfo.TargetInfo.DepthStencilFormat = depthTextureFormat.Value;
+            createInfo.TargetInfo.HasDepthStencilTarget = true;
 
-			createInfo.DepthStencilState = new DepthStencilState
-			{
-				EnableDepthTest = true,
-				EnableDepthWrite = true,
-				CompareOp = CompareOp.LessOrEqual
-			};
-		}
+            createInfo.DepthStencilState = new DepthStencilState {
+                EnableDepthTest = true,
+                EnableDepthWrite = true,
+                CompareOp = CompareOp.LessOrEqual
+            };
+        }
 
-        GraphicsPipeline = GraphicsPipeline.Create(
-            GraphicsDevice,
+        _graphicsPipeline = GraphicsPipeline.Create(
+            graphicsDevice,
             createInfo
         );
 
         fragShader.Dispose();
         vertShader.Dispose();
 
-		InstanceTransferBuffer = TransferBuffer.Create<SpriteInstanceData>(GraphicsDevice, "SpriteBatch InstanceTransferBuffer", TransferBufferUsage.Upload, MAX_SPRITE_COUNT);
+        _instanceTransferBuffer = TransferBuffer.Create<SpriteInstanceData>(graphicsDevice,
+            "SpriteBatch InstanceTransferBuffer", TransferBufferUsage.Upload, MAX_SPRITE_COUNT);
 
-		InstanceBuffer = Buffer.Create<SpriteInstanceData>(GraphicsDevice, BufferUsageFlags.Vertex | BufferUsageFlags.ComputeStorageRead, MAX_SPRITE_COUNT);
-		InstanceIndex = 0;
+        _instanceBuffer = Buffer.Create<SpriteInstanceData>(graphicsDevice,
+            BufferUsageFlags.Vertex | BufferUsageFlags.ComputeStorageRead, MAX_SPRITE_COUNT);
+        _instanceIndex = 0;
 
-		TransferBuffer spriteIndexTransferBuffer = TransferBuffer.Create<uint>(
-			GraphicsDevice,
-			"SpriteIndex TransferBuffer",
-			TransferBufferUsage.Upload,
-			MAX_SPRITE_COUNT * 6
-		);
+        var spriteIndexTransferBuffer = TransferBuffer.Create<uint>(
+            graphicsDevice,
+            "SpriteIndex TransferBuffer",
+            TransferBufferUsage.Upload,
+            MAX_SPRITE_COUNT * 6
+        );
 
-		QuadVertexBuffer = Buffer.Create<PositionTextureColorVertex>(
-			GraphicsDevice,
-			"Quad Vertex",
-			BufferUsageFlags.ComputeStorageWrite | BufferUsageFlags.Vertex,
-			MAX_SPRITE_COUNT * 4
-		);
+        _quadVertexBuffer = Buffer.Create<PositionTextureColorVertex>(
+            graphicsDevice,
+            "Quad Vertex",
+            BufferUsageFlags.ComputeStorageWrite | BufferUsageFlags.Vertex,
+            MAX_SPRITE_COUNT * 4
+        );
 
-		QuadIndexBuffer = Buffer.Create<uint>(
-			GraphicsDevice,
-			"Quad Index",
-			BufferUsageFlags.Index,
-			MAX_SPRITE_COUNT * 6
-		);
+        _quadIndexBuffer = Buffer.Create<uint>(
+            graphicsDevice,
+            "Quad Index",
+            BufferUsageFlags.Index,
+            MAX_SPRITE_COUNT * 6
+        );
 
-		var indexSpan = spriteIndexTransferBuffer.Map<uint>(false);
+        var indexSpan = spriteIndexTransferBuffer.Map<uint>(false);
 
-		for (int i = 0, j = 0; i < MAX_SPRITE_COUNT * 6; i += 6, j += 4)
-		{
-			indexSpan[i]     =  (uint) j;
-			indexSpan[i + 1] =  (uint) j + 1;
-			indexSpan[i + 2] =  (uint) j + 2;
-			indexSpan[i + 3] =  (uint) j + 3;
-			indexSpan[i + 4] =  (uint) j + 2;
-			indexSpan[i + 5] =  (uint) j + 1;
-		}
-		spriteIndexTransferBuffer.Unmap();
+        for (int i = 0, j = 0; i < MAX_SPRITE_COUNT * 6; i += 6, j += 4) {
+            indexSpan[i] = (uint)j;
+            indexSpan[i + 1] = (uint)j + 1;
+            indexSpan[i + 2] = (uint)j + 2;
+            indexSpan[i + 3] = (uint)j + 3;
+            indexSpan[i + 4] = (uint)j + 2;
+            indexSpan[i + 5] = (uint)j + 1;
+        }
 
-		var cmdbuf = GraphicsDevice.AcquireCommandBuffer();
-		var copyPass = cmdbuf.BeginCopyPass();
-		copyPass.UploadToBuffer(spriteIndexTransferBuffer, QuadIndexBuffer, false);
-		cmdbuf.EndCopyPass(copyPass);
-		GraphicsDevice.Submit(cmdbuf);
+        spriteIndexTransferBuffer.Unmap();
 
-		spriteIndexTransferBuffer.Dispose();
-	}
+        var cmdbuf = graphicsDevice.AcquireCommandBuffer();
+        var copyPass = cmdbuf.BeginCopyPass();
+        copyPass.UploadToBuffer(spriteIndexTransferBuffer, _quadIndexBuffer, false);
+        cmdbuf.EndCopyPass(copyPass);
+        graphicsDevice.Submit(cmdbuf);
 
-	// Call this before adding sprites
-	public void Start()
-	{
-		InstanceIndex = 0;
-		InstanceTransferBuffer.Map(true);
-	}
+        spriteIndexTransferBuffer.Dispose();
+    }
 
-	// Add a sprite to the batch
-	public void Add(
-		Vector3 position,
-		float rotation,
-		Vector2 size,
-		Color color,
-		Vector2 leftTopUV,
-		Vector2 dimensionsUV
-	)
-	{
-		var left = leftTopUV.X;
-		var top = leftTopUV.Y;
-		var right = leftTopUV.X + dimensionsUV.X;
-		var bottom = leftTopUV.Y + dimensionsUV.Y;
+    // Call this before adding sprites
+    public void Start() {
+        _instanceIndex = 0;
+        _instanceTransferBuffer.Map(true);
+    }
 
-		var instanceDatas = InstanceTransferBuffer.MappedSpan<SpriteInstanceData>();
-		instanceDatas[InstanceIndex].Translation = position;
-		instanceDatas[InstanceIndex].Rotation = rotation;
-		instanceDatas[InstanceIndex].Scale = size;
-		instanceDatas[InstanceIndex].Color = color.ToVector4();
-		instanceDatas[InstanceIndex].UV0 = leftTopUV;
-		instanceDatas[InstanceIndex].UV1 = new Vector2(right, top);
-		instanceDatas[InstanceIndex].UV2 = new Vector2(left, bottom);
-		instanceDatas[InstanceIndex].UV3 = new Vector2(right, bottom);
-		InstanceIndex += 1;
-	}
+    // Add a sprite to the batch
+    public void Add(
+        Vector3 position,
+        float rotation,
+        Vector2 size,
+        Color color,
+        Vector2 leftTopUV,
+        Vector2 dimensionsUV
+    ) {
+        var left = leftTopUV.X;
+        var top = leftTopUV.Y;
+        var right = leftTopUV.X + dimensionsUV.X;
+        var bottom = leftTopUV.Y + dimensionsUV.Y;
 
-	// Call this outside of any pass
-	public void Upload(CommandBuffer commandBuffer)
-	{
-		InstanceTransferBuffer.Unmap();
+        var instanceDatas = _instanceTransferBuffer.MappedSpan<SpriteInstanceData>();
+        instanceDatas[_instanceIndex].Translation = position;
+        instanceDatas[_instanceIndex].Rotation = rotation;
+        instanceDatas[_instanceIndex].Scale = size;
+        instanceDatas[_instanceIndex].Color = color.ToVector4();
+        instanceDatas[_instanceIndex].UV0 = leftTopUV;
+        instanceDatas[_instanceIndex].UV1 = new Vector2(right, top);
+        instanceDatas[_instanceIndex].UV2 = new Vector2(left, bottom);
+        instanceDatas[_instanceIndex].UV3 = new Vector2(right, bottom);
+        _instanceIndex += 1;
+    }
 
-		if (InstanceCount > 0)
-		{
-			var copyPass = commandBuffer.BeginCopyPass();
-			copyPass.UploadToBuffer(new TransferBufferLocation(InstanceTransferBuffer), new BufferRegion(InstanceBuffer, 0, (uint)(Marshal.SizeOf<SpriteInstanceData>() * InstanceCount)), true);
-			commandBuffer.EndCopyPass(copyPass);
+    // Call this outside of any pass
+    public void Upload(CommandBuffer commandBuffer) {
+        _instanceTransferBuffer.Unmap();
 
-			var computePass = commandBuffer.BeginComputePass(
-				new StorageBufferReadWriteBinding(QuadVertexBuffer, true)
-			);
-			computePass.BindComputePipeline(ComputePipeline);
-			computePass.BindStorageBuffers(InstanceBuffer);
-			computePass.Dispatch((InstanceCount + 63) / 64, 1, 1);
-			commandBuffer.EndComputePass(computePass);
-		}
-	}
+        if (InstanceCount > 0) {
+            var copyPass = commandBuffer.BeginCopyPass();
+            copyPass.UploadToBuffer(new TransferBufferLocation(_instanceTransferBuffer),
+                new BufferRegion(_instanceBuffer, 0, (uint)(Marshal.SizeOf<SpriteInstanceData>() * InstanceCount)),
+                true);
+            commandBuffer.EndCopyPass(copyPass);
 
-	public void Render(RenderPass renderPass, Texture texture, Sampler sampler, ViewProjectionMatrices viewProjectionMatrices)
-	{
-		renderPass.BindGraphicsPipeline(GraphicsPipeline);
-		renderPass.BindFragmentSamplers(new TextureSamplerBinding(texture, sampler));
-		renderPass.BindVertexBuffers(new BufferBinding(QuadVertexBuffer, 0));
-		renderPass.BindIndexBuffer(QuadIndexBuffer, IndexElementSize.ThirtyTwo);
-		renderPass.CommandBuffer.PushVertexUniformData(viewProjectionMatrices.View * viewProjectionMatrices.Projection);
-		renderPass.DrawIndexedPrimitives(InstanceCount * 6, 1, 0, 0, 0);
-	}
+            var computePass = commandBuffer.BeginComputePass(
+                new StorageBufferReadWriteBinding(_quadVertexBuffer, true)
+            );
+            computePass.BindComputePipeline(_computePipeline);
+            computePass.BindStorageBuffers(_instanceBuffer);
+            computePass.Dispatch((InstanceCount + 63) / 64, 1, 1);
+            commandBuffer.EndComputePass(computePass);
+        }
+    }
+
+    public void Render(RenderPass renderPass, Texture texture, Sampler sampler,
+        ViewProjectionMatrices viewProjectionMatrices) {
+        renderPass.BindGraphicsPipeline(_graphicsPipeline);
+        renderPass.BindFragmentSamplers(new TextureSamplerBinding(texture, sampler));
+        renderPass.BindVertexBuffers(new BufferBinding(_quadVertexBuffer));
+        renderPass.BindIndexBuffer(_quadIndexBuffer, IndexElementSize.ThirtyTwo);
+        renderPass.CommandBuffer.PushVertexUniformData(viewProjectionMatrices.View * viewProjectionMatrices.Projection);
+        renderPass.DrawIndexedPrimitives(InstanceCount * 6, 1, 0, 0, 0);
+    }
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 48)]
-struct PositionTextureColorVertex : IVertexType
-{
-	[FieldOffset(0)]
-	public Vector4 Position;
+internal struct PositionTextureColorVertex : IVertexType {
+    [FieldOffset(0)] public Vector4 Position;
 
-	[FieldOffset(16)]
-	public Vector2 TexCoord;
+    [FieldOffset(16)] public Vector2 TexCoord;
 
-	[FieldOffset(32)]
-	public Vector4 Color;
+    [FieldOffset(32)] public Vector4 Color;
 
-	public static VertexElementFormat[] Formats { get; } =
-	[
-		VertexElementFormat.Float4,
-		VertexElementFormat.Float2,
-		VertexElementFormat.Float4
-	];
+    public static VertexElementFormat[] Formats { get; } = [
+        VertexElementFormat.Float4,
+        VertexElementFormat.Float2,
+        VertexElementFormat.Float4
+    ];
 
-	public static uint[] Offsets { get; } =
-	[
-		0,
-		16,
-		32
-	];
+    public static uint[] Offsets { get; } = [
+        0,
+        16,
+        32
+    ];
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 80)]
-public record struct SpriteInstanceData
-{
-	[FieldOffset(0)]
-	public Vector3 Translation;
-	[FieldOffset(12)]
-	public float Rotation;
-	[FieldOffset(16)]
-	public Vector2 Scale;
-	[FieldOffset(32)]
-	public Vector4 Color;
-	[FieldOffset(48)]
-	public Vector2 UV0;
-	[FieldOffset(56)]
-	public Vector2 UV1;
-	[FieldOffset(64)]
-	public Vector2 UV2;
-	[FieldOffset(72)]
-	public Vector2 UV3;
+public record struct SpriteInstanceData {
+    [FieldOffset(0)] public Vector3 Translation;
+    [FieldOffset(12)] public float Rotation;
+    [FieldOffset(16)] public Vector2 Scale;
+    [FieldOffset(32)] public Vector4 Color;
+    [FieldOffset(48)] public Vector2 UV0;
+    [FieldOffset(56)] public Vector2 UV1;
+    [FieldOffset(64)] public Vector2 UV2;
+    [FieldOffset(72)] public Vector2 UV3;
 }
 
 public readonly record struct ViewProjectionMatrices(Matrix4x4 View, Matrix4x4 Projection);

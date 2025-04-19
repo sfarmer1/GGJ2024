@@ -1,15 +1,12 @@
-namespace RollAndCash.Content;
+using Tactician.Content;
 
-public static class AudioArrays
-{
-    public static StaticSoundID[] Coins = {
-        StaticAudio.Coin1,
-        StaticAudio.Coin2,
-        StaticAudio.Coin3,
-        StaticAudio.Coin4,
-        StaticAudio.Coin5,
-        StaticAudio.Coin6,
-        StaticAudio.Coin7,
-        StaticAudio.Coin8
-    };
+namespace Tactician.Data;
+
+public static class AudioArrays {
+    // Add arrays of StaticSoundIDs here like this
+    
+    // public static StaticSoundID[] Coins = {
+    //     StaticAudio.Coin1,
+    //     StaticAudio.Coin2,
+    // };
 }

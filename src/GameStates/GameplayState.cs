@@ -1,208 +1,148 @@
 using System;
 using MoonTools.ECS;
 using MoonWorks;
-using RollAndCash.Components;
-using RollAndCash.Content;
-using RollAndCash.Messages;
-using RollAndCash.Relations;
-using RollAndCash.Systems;
+using Tactician.Components;
+using Tactician.Content;
+using Tactician.Messages;
+using Tactician.Systems;
+using Renderer = Tactician.Graphics.Renderer;
 
-namespace RollAndCash.GameStates;
+namespace Tactician.GameStates;
 
-public class GameplayState : GameState
-{
-    RollAndCashGame Game;
+public class GameplayState : GameState {
+    private readonly TacticianGame _game;
+    private AudioSystem _audioSystem;
+    private ColorAnimationSystem _colorAnimationSystem;
+    private DirectionalAnimationSystem _directionalAnimationSystem;
+    private InputSystem _inputSystem;
+    private MotionSystem _motionSystem;
+    private PlayerControllerSystem _playerControllerSystem;
 
-    Renderer Renderer;
-    World World;
-    Input Input;
-    Motion Motion;
-    Audio Audio;
-    Hold Hold;
-    ProductSpawner ProductSpawner;
-    ShelfSpawner ShelfSpawner;
-    Ticker Ticker;
-    Systems.GameTimer GameTimer;
-    Timing Timing;
-    Orders Orders;
-    SetSpriteAnimationSystem SetSpriteAnimationSystem;
-    DirectionalAnimation DirectionalAnimation;
-    UpdateSpriteAnimationSystem UpdateSpriteAnimationSystem;
-    ColorAnimation ColorAnimation;
-    NPCController NPCController;
-    DroneController DroneController;
-    PlayerController PlayerController;
-    GameState TransitionState;
+    private Renderer _renderer;
+    private SetSpriteAnimationSystem _setSpriteAnimationSystem;
+    private GameState _transitionState;
+    private UpdateSpriteAnimationSystem _updateSpriteAnimationSystem;
+    private World _world;
 
-    public GameplayState(RollAndCashGame game, GameState transitionState)
-    {
-        Game = game;
-        TransitionState = transitionState;
+    public GameplayState(TacticianGame game, GameState transitionState) {
+        _game = game;
+        _transitionState = transitionState;
     }
 
-    public override void Start()
-    {
-        World = new World();
+    public override void Start() {
+        _world = new World();
 
-        GameTimer = new(World);
-        Timing = new(World);
-        Input = new Input(World, Game.Inputs);
-        Motion = new Motion(World);
-        Audio = new Audio(World, Game.AudioDevice);
-        PlayerController = new PlayerController(World);
-        Hold = new Hold(World);
-        Orders = new Orders(World);
-        ProductSpawner = new ProductSpawner(World);
-        ShelfSpawner = new ShelfSpawner(World);
-        SetSpriteAnimationSystem = new SetSpriteAnimationSystem(World);
-        UpdateSpriteAnimationSystem = new UpdateSpriteAnimationSystem(World);
-        ColorAnimation = new ColorAnimation(World);
-        DirectionalAnimation = new DirectionalAnimation(World);
-        NPCController = new NPCController(World);
-        DroneController = new DroneController(World);
+        _inputSystem = new InputSystem(_world, _game.Inputs);
+        _motionSystem = new MotionSystem(_world);
+        _audioSystem = new AudioSystem(_world, _game.AudioDevice);
+        _playerControllerSystem = new PlayerControllerSystem(_world);
+        _setSpriteAnimationSystem = new SetSpriteAnimationSystem(_world);
+        _updateSpriteAnimationSystem = new UpdateSpriteAnimationSystem(_world);
+        _colorAnimationSystem = new ColorAnimationSystem(_world);
+        _directionalAnimationSystem = new DirectionalAnimationSystem(_world);
 
-        CategoriesAndIngredients cats = new CategoriesAndIngredients(World);
-        cats.Initialize(World);
+        _renderer = new Renderer(_world, _game.GraphicsDevice, _game.RootTitleStorage, _game.MainWindow.SwapchainFormat);
 
-        Ticker = new Ticker(World, cats);
+        var topBorder = _world.CreateEntity();
+        _world.Set(topBorder, new Position(0, 65));
+        _world.Set(topBorder, new Rectangle(0, 0, Dimensions.GAME_W, 10));
+        _world.Set(topBorder, new Solid());
 
-        Renderer = new Renderer(World, Game.GraphicsDevice, Game.RootTitleStorage, Game.MainWindow.SwapchainFormat);
+        var leftBorder = _world.CreateEntity();
+        _world.Set(leftBorder, new Position(-10, 0));
+        _world.Set(leftBorder, new Rectangle(0, 0, 10, Dimensions.GAME_H));
+        _world.Set(leftBorder, new Solid());
 
-        var topBorder = World.CreateEntity();
-        World.Set(topBorder, new Position(0, 65));
-        World.Set(topBorder, new Rectangle(0, 0, Dimensions.GAME_W, 10));
-        World.Set(topBorder, new Solid());
+        var rightBorder = _world.CreateEntity();
+        _world.Set(rightBorder, new Position(Dimensions.GAME_W, 0));
+        _world.Set(rightBorder, new Rectangle(0, 0, 10, Dimensions.GAME_H));
+        _world.Set(rightBorder, new Solid());
 
-        var leftBorder = World.CreateEntity();
-        World.Set(leftBorder, new Position(-10, 0));
-        World.Set(leftBorder, new Rectangle(0, 0, 10, Dimensions.GAME_H));
-        World.Set(leftBorder, new Solid());
+        var bottomBorder = _world.CreateEntity();
+        _world.Set(bottomBorder, new Position(0, Dimensions.GAME_H));
+        _world.Set(bottomBorder, new Rectangle(0, 0, Dimensions.GAME_W, 10));
+        _world.Set(bottomBorder, new Solid());
 
-        var rightBorder = World.CreateEntity();
-        World.Set(rightBorder, new Position(Dimensions.GAME_W, 0));
-        World.Set(rightBorder, new Rectangle(0, 0, 10, Dimensions.GAME_H));
-        World.Set(rightBorder, new Solid());
+        var background = _world.CreateEntity();
+        _world.Set(background, new Position(0, 0));
+        _world.Set(background, new Depth(999));
+        _world.Set(background, new SpriteAnimation(SpriteAnimations.BG, 0));
 
-        var bottomBorder = World.CreateEntity();
-        World.Set(bottomBorder, new Position(0, Dimensions.GAME_H));
-        World.Set(bottomBorder, new Rectangle(0, 0, Dimensions.GAME_W, 10));
-        World.Set(bottomBorder, new Solid());
+        var uiTickerBackground = _world.CreateEntity();
+        _world.Set(uiTickerBackground, new Position(0, 0));
+        _world.Set(uiTickerBackground, new Depth(1));
+        _world.Set(uiTickerBackground, new SpriteAnimation(SpriteAnimations.HUD_Ticker, 0));
 
-        var background = World.CreateEntity();
-        World.Set(background, new Position(0, 0));
-        World.Set(background, new Depth(999));
-        World.Set(background, new SpriteAnimation(Content.SpriteAnimations.BG, 0));
+        var uiBottomBackground = _world.CreateEntity();
+        _world.Set(uiBottomBackground, new Position(0, Dimensions.GAME_H - 40));
+        _world.Set(uiBottomBackground, new Depth(9));
+        _world.Set(uiBottomBackground, new SpriteAnimation(SpriteAnimations.HUD_Bottom, 0));
 
-        var uiTickerBackground = World.CreateEntity();
-        World.Set(uiTickerBackground, new Position(0, 0));
-        World.Set(uiTickerBackground, new Depth(1));
-        World.Set(uiTickerBackground, new SpriteAnimation(Content.SpriteAnimations.HUD_Ticker, 0));
+        var exit = _world.CreateEntity();
+        _world.Set(exit, new Position(Dimensions.GAME_W * 0.5f - 44, 0));
+        _world.Set(exit, new Rectangle(0, 0, 80, 88));
+        _world.Set(exit, new StoreExit());
+        _world.Set(exit, new CanInteract());
 
-        var uiBottomBackground = World.CreateEntity();
-        World.Set(uiBottomBackground, new Position(0, Dimensions.GAME_H - 40));
-        World.Set(uiBottomBackground, new Depth(9));
-        World.Set(uiBottomBackground, new SpriteAnimation(Content.SpriteAnimations.HUD_Bottom, 0));
+        var timer = _world.CreateEntity();
+        _world.Set(timer, new GameTimer(5));
+        _world.Set(timer, new Position(Dimensions.GAME_W * 0.5f, 38));
+        _world.Set(timer, new TextDropShadow(1, 1));
 
-        Orders.InitializeOrders();
+        var scoreOne = _world.CreateEntity();
+        _world.Set(scoreOne, new Position(80, 345));
+        _world.Set(scoreOne, new Score(0));
+        _world.Set(scoreOne, new DisplayScore(0));
+        _world.Set(scoreOne, new Text(Fonts.KosugiID, FontSizes.SCORE, "0"));
 
-        var cashRegisterLeftCollision = World.CreateEntity();
-        World.Set(cashRegisterLeftCollision, new Position(15, 70));
-        World.Set(cashRegisterLeftCollision, new Rectangle(0, 0, 60, 50));
-        World.Set(cashRegisterLeftCollision, new Solid());
+        var scoreTwo = _world.CreateEntity();
+        _world.Set(scoreTwo, new Position(560, 345));
+        _world.Set(scoreTwo, new Score(0));
+        _world.Set(scoreTwo, new DisplayScore(0));
 
-        var cashRegisterLeftInteraction = World.CreateEntity();
-        World.Set(cashRegisterLeftInteraction, new Position(8, 70));
-        World.Set(cashRegisterLeftInteraction, new Rectangle(0, 0, 80, 90));
-        World.Set(cashRegisterLeftInteraction, new CanInteract());
-        World.Set(cashRegisterLeftInteraction, new CanFillOrders());
+        _world.Set(scoreTwo, new Text(Fonts.KosugiID, FontSizes.SCORE, "0"));
 
-        var cashRegisterRightCollision = World.CreateEntity();
-        World.Set(cashRegisterRightCollision, new Position(Dimensions.GAME_W, 70));
-        World.Set(cashRegisterRightCollision, new Rectangle(-80, 0, 80, 50));
-        World.Set(cashRegisterRightCollision, new Solid());
+        var playerOne = _playerControllerSystem.SpawnPlayer(0);
+        var playerTwo = _playerControllerSystem.SpawnPlayer(1);
 
-        var cashRegisterRight = World.CreateEntity();
-        World.Set(cashRegisterRight, new Position(Dimensions.GAME_W, 70));
-        World.Set(cashRegisterRight, new Rectangle(-80, 0, 80, 90));
-        World.Set(cashRegisterRight, new CanInteract());
-        World.Set(cashRegisterRight, new CanFillOrders());
+        _world.Relate(playerOne, scoreOne, new HasScore());
+        _world.Relate(playerTwo, scoreTwo, new HasScore());
 
-        var exit = World.CreateEntity();
-        World.Set(exit, new Position(Dimensions.GAME_W * 0.5f - 44, 0));
-        World.Set(exit, new Rectangle(0, 0, 80, 88));
-        World.Set(exit, new StoreExit());
-        World.Set(exit, new CanInteract());
+        var gameInProgressEntity = _world.CreateEntity();
+        _world.Set(gameInProgressEntity, new GameInProgress());
 
-        var timer = World.CreateEntity();
-        World.Set(timer, new Components.GameTimer(90));
-        World.Set(timer, new Position(Dimensions.GAME_W * 0.5f, 38));
-        World.Set(timer, new TextDropShadow(1, 1));
-
-        var scoreOne = World.CreateEntity();
-        World.Set(scoreOne, new Position(80, 345));
-        World.Set(scoreOne, new Score(0));
-        World.Set(scoreOne, new DisplayScore(0));
-        World.Set(scoreOne, new Text(Fonts.KosugiID, FontSizes.SCORE, "0"));
-
-        var scoreTwo = World.CreateEntity();
-        World.Set(scoreTwo, new Position(560, 345));
-        World.Set(scoreTwo, new Score(0));
-        World.Set(scoreTwo, new DisplayScore(0));
-
-        World.Set(scoreTwo, new Text(Fonts.KosugiID, FontSizes.SCORE, "0"));
-
-        var playerOne = PlayerController.SpawnPlayer(0);
-        var playerTwo = PlayerController.SpawnPlayer(1);
-
-        World.Relate(playerOne, scoreOne, new HasScore());
-        World.Relate(playerTwo, scoreTwo, new HasScore());
-
-        var gameInProgressEntity = World.CreateEntity();
-        World.Set(gameInProgressEntity, new GameInProgress());
-
-        ShelfSpawner.SpawnShelves();
-        ProductSpawner.SpawnAllProducts();
-        World.Send(new PlaySongMessage());
-
+        _world.Send(new PlaySongMessage());
     }
 
-    public override void Update(TimeSpan dt)
-    {
-        Timing.Update(dt);
-        UpdateSpriteAnimationSystem.Update(dt);
-        GameTimer.Update(dt);
-        Ticker.Update(dt);
-        Input.Update(dt);
-        PlayerController.Update(dt);
-        NPCController.Update(dt);
-        DroneController.Update(dt);
-        Motion.Update(dt);
-        Hold.Update(dt);
-        Orders.Update(dt);
-        DirectionalAnimation.Update(dt);
-        SetSpriteAnimationSystem.Update(dt);
-        ColorAnimation.Update(dt);
-        Audio.Update(dt);
+    public override void Update(TimeSpan dt) {
+        _updateSpriteAnimationSystem.Update(dt);
+        _inputSystem.Update(dt);
+        _playerControllerSystem.Update(dt);
+        _motionSystem.Update(dt);
+        _directionalAnimationSystem.Update(dt);
+        _setSpriteAnimationSystem.Update(dt);
+        _colorAnimationSystem.Update(dt);
+        _audioSystem.Update(dt);
 
-        if (World.SomeMessage<EndGame>())
-        {
-            World.FinishUpdate();
-            Audio.Cleanup();
-            World.Dispose();
-            Game.SetState(TransitionState);
+        if (_world.SomeMessage<EndGame>()) {
+            _world.FinishUpdate();
+            _audioSystem.Cleanup();
+            _world.Dispose();
+            _game.SetState(_transitionState);
             return;
         }
 
-        World.FinishUpdate();
+        _world.FinishUpdate();
     }
 
-    public override void Draw(Window window, double alpha)
-    {
-        Renderer.Render(Game.MainWindow);
+    public override void Draw(Window window, double alpha) {
+        _renderer.Render(_game.MainWindow);
     }
 
-    public override void End()
-    {
+    public override void End() {
+    }
 
+    public void SetTransitionState(GameState state) {
+        _transitionState = state;
     }
 }

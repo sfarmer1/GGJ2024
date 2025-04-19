@@ -655,7 +655,7 @@ using MoonWorks.Graphics;
 using MoonWorks.Graphics.Font;
 using MoonWorks.Storage;
 
-namespace RollAndCash.Content
+namespace Tactician.Content
 {{
     public static class Fonts
     {{
@@ -715,11 +715,11 @@ namespace RollAndCash.Content
 
 			var textureAtlasesClassCode = $@"
 using System.IO;
-using RollAndCash.Data;
+using Tactician.Data;
 using MoonWorks.AsyncIO;
 using MoonWorks.Graphics;
 
-namespace RollAndCash.Content
+namespace Tactician.Content
 {{
 	public static class TextureAtlases
 	{{
@@ -775,9 +775,9 @@ namespace RollAndCash.Content
 
 			var spriteAnimationsClassCode = $@"
 using System.Collections.Generic;
-using RollAndCash.Data;
+using Tactician.Data;
 
-namespace RollAndCash.Content
+namespace Tactician.Content
 {{
 	public static class SpriteAnimations
 	{{
@@ -858,10 +858,10 @@ namespace RollAndCash.Content
 
 			var textureAtlasesClassCode = $@"
 using System.IO;
-using RollAndCash.Data;
+using Tactician.Data;
 using System.Collections.Generic;
 
-namespace RollAndCash.Content
+namespace Tactician.Content
 {{
 	public static class Levels
 	{{
@@ -1000,7 +1000,7 @@ using System.IO;
 using MoonWorks.Video;
 using MoonWorks.Graphics;
 
-namespace RollAndCash.Content
+namespace Tactician.Content
 {{
 	public static class Videos
 	{{
@@ -1041,9 +1041,9 @@ namespace RollAndCash.Content
 using System.IO;
 using MoonWorks.AsyncIO;
 using MoonWorks.Audio;
-using RollAndCash.Data;
+using Tactician.Data;
 
-namespace RollAndCash.Content
+namespace Tactician.Content
 {{
 	public static class StaticAudioPacks
 	{{
@@ -1103,7 +1103,7 @@ using System.IO;
 using MoonWorks.Audio;
 using System.Collections.Generic;
 
-namespace RollAndCash.Content
+namespace Tactician.Content
 {{
 	public record struct StaticSoundID(int ID);
 
@@ -1163,7 +1163,7 @@ using MoonWorks.AsyncIO;
 using MoonWorks.Audio;
 using System.Collections.Generic;
 
-namespace RollAndCash.Content
+namespace Tactician.Content
 {{
 	public record struct StreamingSoundID(int ID);
 	public record class QoaFile(string FilePath, AudioDataQoa AudioData);
@@ -1223,7 +1223,7 @@ namespace RollAndCash.Content
 			var musicStemsClassClode = $@"
 using System.IO;
 
-namespace RollAndCash.Content
+namespace Tactician.Content
 {{
 	public static class MusicStems
 	{{

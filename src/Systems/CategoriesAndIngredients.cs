@@ -1,15 +1,15 @@
 using System;
-using MoonWorks;
-using RollAndCash.Components;
 using MoonTools.ECS;
 using MoonWorks.Graphics;
-using RollAndCash.Utility;
-using RollAndCash.Data;
+using Tactician.Components;
+using Tactician.Content;
+using Tactician.Data;
+using Tactician.Utility;
+using Filter = MoonTools.ECS.Filter;
 
-namespace RollAndCash.Systems;
+namespace Tactician.Systems;
 
-public enum Category
-{
+public enum Category {
     Animals,
     Clothes,
     Cosmetics,
@@ -22,8 +22,7 @@ public enum Category
     Relics
 }
 
-public enum Ingredient
-{
+public enum Ingredient {
     Ectoplasm,
     Silicon,
     Blueberry,
@@ -46,20 +45,16 @@ public enum Ingredient
     Oatmeal
 }
 
-public class CategoriesAndIngredients : Manipulator
-{
-    const float MaxPriceDelta = 10.0f;
-    MoonTools.ECS.Filter IngredientFilter;
+public class CategoriesAndIngredients : Manipulator {
+    private const float MAX_PRICE_DELTA = 10.0f;
+    private readonly Filter _ingredientFilter;
 
-    public CategoriesAndIngredients(World world) : base(world)
-    {
-        IngredientFilter = FilterBuilder.Include<Ingredient>().Build();
+    public CategoriesAndIngredients(World world) : base(world) {
+        _ingredientFilter = FilterBuilder.Include<Ingredient>().Build();
     }
 
-    public static Ingredient GetIngredient(string s)
-    {
-        return s.ToLowerInvariant() switch
-        {
+    public static Ingredient GetIngredient(string s) {
+        return s.ToLowerInvariant() switch {
             "ectoplasm" => Ingredient.Ectoplasm,
             "silicon" => Ingredient.Silicon,
             "blueberry" => Ingredient.Blueberry,
@@ -84,10 +79,8 @@ public class CategoriesAndIngredients : Manipulator
         };
     }
 
-    public static Category GetCategory(string s)
-    {
-        return s.ToLowerInvariant() switch
-        {
+    public static Category GetCategory(string s) {
+        return s.ToLowerInvariant() switch {
             "animals" => Category.Animals,
             "clothes" => Category.Clothes,
             "cosmetics" => Category.Cosmetics,
@@ -102,10 +95,8 @@ public class CategoriesAndIngredients : Manipulator
         };
     }
 
-    public static string GetDisplayName(Ingredient ingredient)
-    {
-        return ingredient switch
-        {
+    public static string GetDisplayName(Ingredient ingredient) {
+        return ingredient switch {
             Ingredient.Ectoplasm => "Ectoplasm",
             Ingredient.Silicon => "Silicon",
             Ingredient.Blueberry => "Blueberry",
@@ -131,10 +122,8 @@ public class CategoriesAndIngredients : Manipulator
     }
 
 
-    public static string GetDisplayName(Category category)
-    {
-        return category switch
-        {
+    public static string GetDisplayName(Category category) {
+        return category switch {
             Category.Animals => "Animals",
             Category.Clothes => "Clothes",
             Category.Cosmetics => "Cosmetics",
@@ -149,37 +138,33 @@ public class CategoriesAndIngredients : Manipulator
         };
     }
 
-    public static SpriteAnimationInfo GetIcon(Category category)
-    {
-        return category switch
-        {
-            Category.Animals => Content.SpriteAnimations.Item_Animal,
+    public static SpriteAnimationInfo GetIcon(Category category) {
+        return category switch {
+            Category.Animals => SpriteAnimations.Item_Animal,
 
-            Category.Clothes => Content.SpriteAnimations.Item_Clothing,
+            Category.Clothes => SpriteAnimations.Item_Clothing,
 
-            Category.Cosmetics => Content.SpriteAnimations.Item_Cosmetics,
+            Category.Cosmetics => SpriteAnimations.Item_Cosmetics,
 
-            Category.Electronics => Content.SpriteAnimations.Item_Electronics,
+            Category.Electronics => SpriteAnimations.Item_Electronics,
 
-            Category.Food => Content.SpriteAnimations.Item_Food,
+            Category.Food => SpriteAnimations.Item_Food,
 
-            Category.Furniture => Content.SpriteAnimations.Item_Furniture,
+            Category.Furniture => SpriteAnimations.Item_Furniture,
 
-            Category.Gasses => Content.SpriteAnimations.Item_Gasses,
+            Category.Gasses => SpriteAnimations.Item_Gasses,
 
-            Category.IntellectualProperty => Content.SpriteAnimations.Item_IP,
+            Category.IntellectualProperty => SpriteAnimations.Item_IP,
 
-            Category.Pharmacy => Content.SpriteAnimations.Item_Pharmacy,
+            Category.Pharmacy => SpriteAnimations.Item_Pharmacy,
 
-            Category.Relics => Content.SpriteAnimations.Item_Relic,
-            _ => Content.SpriteAnimations.Item_Animal
+            Category.Relics => SpriteAnimations.Item_Relic,
+            _ => SpriteAnimations.Item_Animal
         };
     }
 
-    public static Color GetColor(Category category)
-    {
-        return category switch
-        {
+    public static Color GetColor(Category category) {
+        return category switch {
             Category.Animals => Color.GreenYellow,
             Category.Clothes => Color.Blue,
             Category.Cosmetics => Color.Red,
@@ -194,10 +179,8 @@ public class CategoriesAndIngredients : Manipulator
         };
     }
 
-    public static string GetStockTicker(Ingredient ingredient)
-    {
-        return ingredient switch
-        {
+    public static string GetStockTicker(Ingredient ingredient) {
+        return ingredient switch {
             Ingredient.Ectoplasm => "ECTO",
             Ingredient.Silicon => "SIL",
             Ingredient.Blueberry => "BLU",
@@ -222,13 +205,11 @@ public class CategoriesAndIngredients : Manipulator
         };
     }
 
-    public (float price, float delta, Ingredient ingredient) ChangePrice()
-    {
-        float delta = Rando.Range(-MaxPriceDelta, MaxPriceDelta);
+    public (float price, float delta, Ingredient ingredient) ChangePrice() {
+        var delta = Rando.Range(-MAX_PRICE_DELTA, MAX_PRICE_DELTA);
 
-        if (!IngredientFilter.Empty)
-        {
-            var entity = IngredientFilter.RandomEntity;
+        if (!_ingredientFilter.Empty) {
+            var entity = _ingredientFilter.RandomEntity;
             var price = Get<Price>(entity).Value;
             var ingredient = Get<Ingredient>(entity);
             price = MathF.Round(price + delta, 2);
@@ -239,23 +220,19 @@ public class CategoriesAndIngredients : Manipulator
         return (0, 0, Ingredient.Blueberry); // this should never happen!
     }
 
-    public void Initialize(World world)
-    {
+    public void Initialize(World world) {
         var categories = Enum.GetValues(typeof(Category));
         var ingredients = Enum.GetValues(typeof(Ingredient));
 
-        foreach (Category category in categories)
-        {
+        foreach (Category category in categories) {
             var e = world.CreateEntity();
             world.Set(e, category);
         }
 
-        foreach (Ingredient ingredient in ingredients)
-        {
+        foreach (Ingredient ingredient in ingredients) {
             var e = world.CreateEntity();
             world.Set(e, ingredient);
             world.Set(e, new Price(Rando.Range(0f, 100.0f)));
         }
     }
-
 }

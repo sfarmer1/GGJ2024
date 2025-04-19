@@ -1,7 +1,6 @@
-namespace RollAndCash.Data;
+namespace Tactician.Data;
 
-public enum SoundCategory
-{
+public enum SoundCategory {
     Generic,
     Drone
 }

@@ -73,7 +73,7 @@ public class Renderer : MoonTools.ECS.Renderer {
 
         _pointSampler = Sampler.Create(_graphicsDevice, SamplerCreateInfo.PointClamp);
 
-        _artSpriteBatch = new SpriteBatch(_graphicsDevice, titleStorage, TextureFormat.D16Unorm);
+        _artSpriteBatch = new SpriteBatch(_graphicsDevice, titleStorage, swapchainFormat, TextureFormat.D16Unorm);
     }
 
     public void Render(Window window) {

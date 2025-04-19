@@ -45,7 +45,7 @@ internal class Program {
 			appInfo,
 			windowCreateInfo,
 			framePacingSettings,
-			MoonWorks.Graphics.ShaderFormat.SPIRV | MoonWorks.Graphics.ShaderFormat.DXBC | ShaderFormat.MSL,
+			ShaderFormat.SPIRV | ShaderFormat.DXBC | ShaderFormat.MSL,
 			debugMode
 		);
 

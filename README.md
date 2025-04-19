@@ -1,5 +1,7 @@
 # MOONWORKS GAME TEMPLATE
 
+[WORK IN PROGRESS]
+
 This template is a stripped down version of [ROLL AND CASH: GROCERY LORDS](https://github.com/thatcosmonaut/GGJ2024), a game made in 48 hours for Global Game Jam 2024 using the [MoonWorks](https://github.com/MoonsideGames/MoonWorks) game framework.
 
 The goals of this template are to:

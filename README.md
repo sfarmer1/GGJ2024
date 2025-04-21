@@ -2,6 +2,9 @@
 
 [WORK IN PROGRESS]
 
+Clone this template using the following terminal or PowerShell command:
+git clone --recurse-submodules -j8 https://github.com/sfarmer1/Moonworks-Game-Template.git
+
 This template is a stripped down version of [ROLL AND CASH: GROCERY LORDS](https://github.com/thatcosmonaut/GGJ2024), a game made in 48 hours for Global Game Jam 2024 using the [MoonWorks](https://github.com/MoonsideGames/MoonWorks) game framework.
 
 The goals of this template are to:

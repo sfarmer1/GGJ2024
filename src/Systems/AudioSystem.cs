@@ -10,7 +10,6 @@ namespace MoonworksTemplateGame.Systems;
 
 public class AudioSystem : MoonTools.ECS.System {
     private readonly AudioDevice _audioDevice;
-    private readonly PersistentVoice _droneVoice;
     private readonly StreamingSoundID[] _gameplaySongs;
     private readonly PersistentVoice _musicVoice;
     private AudioDataQoa _music;
@@ -26,10 +25,11 @@ public class AudioSystem : MoonTools.ECS.System {
 
         var streamingAudioData = StreamingAudio.Lookup(StreamingAudio.attention_shoppers_v1);
         _musicVoice = _audioDevice.Obtain<PersistentVoice>(streamingAudioData.Format);
-        _musicVoice.SetVolume(0.0f); // TODO: re-enable audio
-
-        _droneVoice = _audioDevice.Obtain<PersistentVoice>(StaticAudio.Lookup(StaticAudio.Drone1).Format);
-        _droneVoice.SetVolume(0.0f); // TODO: re-enable audio
+#if DEBUG
+        _musicVoice.SetVolume(0.0f);
+#else
+        _musicVoice.SetVolume(0.5f);
+#endif
     }
 
     public override void Update(TimeSpan delta) {
@@ -48,16 +48,11 @@ public class AudioSystem : MoonTools.ECS.System {
             _music.SendTo(_musicVoice);
             _musicVoice.Play();
         }
-
-        if (SomeMessage<StopDroneSounds>()) _droneVoice.Stop();
     }
 
     public void Cleanup() {
         _music.Disconnect();
         _musicVoice.Dispose();
-
-        _droneVoice.Stop();
-        _droneVoice.Dispose();
     }
 
     private void PlayStaticSound(
@@ -67,16 +62,13 @@ public class AudioSystem : MoonTools.ECS.System {
         float pan,
         SoundCategory soundCategory
     ) {
-        SourceVoice voice;
-        if (soundCategory == SoundCategory.Drone) {
-            voice = _droneVoice;
-            voice.Stop(); // drones should interrupt their own lines
-        }
-        else {
-            voice = _audioDevice.Obtain<TransientVoice>(sound.Format);
-        }
+        var voice = _audioDevice.Obtain<TransientVoice>(sound.Format);
 
-        voice.SetVolume(0.0f); // TODO: re-enable audio
+#if DEBUG
+        voice.SetVolume(0.0f);
+#else
+        voice.SetVolume(0.5f);
+#endif
         voice.SetPitch(pitch);
         voice.SetPan(pan);
         voice.Submit(sound);

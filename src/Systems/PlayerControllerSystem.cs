@@ -5,8 +5,6 @@ using MoonWorks.Graphics;
 using MoonworksTemplateGame.Components;
 using MoonworksTemplateGame.Content;
 using MoonworksTemplateGame.Utility;
-using MoonworksTemplateGame.Data;
-using MoonworksTemplateGame.Messages;
 using Filter = MoonTools.ECS.Filter;
 
 namespace MoonworksTemplateGame.Systems;
@@ -30,10 +28,6 @@ public class PlayerControllerSystem : MoonTools.ECS.System {
             new SpriteAnimation(index == 0 ? SpriteAnimations.Char_Walk_Down : SpriteAnimations.Char2_Walk_Down, 0));
         World.Set(player, new Player(index));
         World.Set(player, new Rectangle(-8, -8, 16, 16));
-        World.Set(player, new CanInteract());
-        World.Set(player, new CanInspect());
-        World.Set(player, new CanHold());
-        World.Set(player, new CanBeStolenFrom());
         World.Set(player, new Solid());
         World.Set(player, index == 0 ? Color.Green : Color.Blue);
         World.Set(player, new Depth(5));
@@ -79,8 +73,6 @@ public class PlayerControllerSystem : MoonTools.ECS.System {
 
             #endregion
 
-            if (inputState.Interact.IsPressed) Set(entity, new TryHold());
-
             // Movement
             var velocity = Get<Velocity>(entity).Value;
 
@@ -109,13 +101,12 @@ public class PlayerControllerSystem : MoonTools.ECS.System {
                 if (Has<CanFunnyRun>(entity)) {
                     maxSpeed = (maxSpeed + _maxSpeedBase) / 2f;
                     Remove<CanFunnyRun>(entity);
-                    Set(entity, new FunnyRunTimer(.25f));
+                    Set(entity, new FunnyRunTimer(0.25f));
                 }
 
                 direction = MathUtilities.SafeNormalize(direction);
 
                 var maxAdd = deltaTime * 30;
-                if (HasOutRelation<Holding>(entity)) maxAdd /= 2;
 
                 maxSpeed = Math.Min(maxSpeed + maxAdd, 300);
                 Set(entity, new MaxSpeed(maxSpeed));

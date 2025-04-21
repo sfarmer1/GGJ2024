@@ -11,7 +11,7 @@ using MoonworksTemplateGame.Content;
 namespace MoonworksTemplateGame.GameStates;
 
 public class LoadState : GameState {
-    private readonly global::MoonworksTemplateGame.MoonworksTemplateGame _game;
+    private readonly MoonworksTemplateGame _game;
     private readonly GraphicsDevice _graphicsDevice;
     private readonly Stopwatch _loadTimer = new();
     private readonly TextBatch _textBatch;
@@ -22,7 +22,7 @@ public class LoadState : GameState {
     private readonly GameState _transitionState;
     private AsyncFileLoader _asyncFileLoader;
 
-    public LoadState(global::MoonworksTemplateGame.MoonworksTemplateGame game, GameState transitionState) {
+    public LoadState(MoonworksTemplateGame game, GameState transitionState) {
         _game = game;
         _graphicsDevice = _game.GraphicsDevice;
         _asyncFileLoader = new AsyncFileLoader(_graphicsDevice);

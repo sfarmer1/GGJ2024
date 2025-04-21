@@ -1,5 +1,3 @@
-using MoonworksTemplateGame.Content;
-
 namespace MoonworksTemplateGame.Data;
 
 public static class AudioArrays {

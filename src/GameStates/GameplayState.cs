@@ -69,26 +69,11 @@ public class GameplayState : GameState {
         _world.Set(background, new Depth(999));
         _world.Set(background, new SpriteAnimation(SpriteAnimations.BG, 0));
 
-        var uiTickerBackground = _world.CreateEntity();
-        _world.Set(uiTickerBackground, new Position(0, 0));
-        _world.Set(uiTickerBackground, new Depth(1));
-        _world.Set(uiTickerBackground, new SpriteAnimation(SpriteAnimations.HUD_Ticker, 0));
-
         var uiBottomBackground = _world.CreateEntity();
         _world.Set(uiBottomBackground, new Position(0, Dimensions.GAME_H - 40));
         _world.Set(uiBottomBackground, new Depth(9));
         _world.Set(uiBottomBackground, new SpriteAnimation(SpriteAnimations.HUD_Bottom, 0));
 
-        var exit = _world.CreateEntity();
-        _world.Set(exit, new Position(Dimensions.GAME_W * 0.5f - 44, 0));
-        _world.Set(exit, new Rectangle(0, 0, 80, 88));
-        _world.Set(exit, new StoreExit());
-        _world.Set(exit, new CanInteract());
-
-        var timer = _world.CreateEntity();
-        _world.Set(timer, new GameTimer(5));
-        _world.Set(timer, new Position(Dimensions.GAME_W * 0.5f, 38));
-        _world.Set(timer, new TextDropShadow(1, 1));
 
         var scoreOne = _world.CreateEntity();
         _world.Set(scoreOne, new Position(80, 345));
@@ -100,7 +85,6 @@ public class GameplayState : GameState {
         _world.Set(scoreTwo, new Position(560, 345));
         _world.Set(scoreTwo, new Score(0));
         _world.Set(scoreTwo, new DisplayScore(0));
-
         _world.Set(scoreTwo, new Text(Fonts.KosugiID, FontSizes.SCORE, "0"));
 
         var playerOne = _playerControllerSystem.SpawnPlayer(0);

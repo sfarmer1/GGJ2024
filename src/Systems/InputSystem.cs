@@ -10,7 +10,6 @@ public struct InputState {
     public ButtonState Right { get; set; }
     public ButtonState Up { get; set; }
     public ButtonState Down { get; set; }
-    public ButtonState Interact { get; set; }
 }
 
 public class ControlSet {
@@ -18,7 +17,6 @@ public class ControlSet {
     public VirtualButton Right { get; set; } = new EmptyButton();
     public VirtualButton Up { get; set; } = new EmptyButton();
     public VirtualButton Down { get; set; } = new EmptyButton();
-    public VirtualButton Interact { get; set; } = new EmptyButton();
 }
 
 public class InputSystem : MoonTools.ECS.System {
@@ -35,25 +33,21 @@ public class InputSystem : MoonTools.ECS.System {
         _playerOneKeyboard.Down = Inputs.Keyboard.Button(KeyCode.S);
         _playerOneKeyboard.Left = Inputs.Keyboard.Button(KeyCode.A);
         _playerOneKeyboard.Right = Inputs.Keyboard.Button(KeyCode.D);
-        _playerOneKeyboard.Interact = Inputs.Keyboard.Button(KeyCode.Space);
 
         _playerOneGamepad.Up = Inputs.GetGamepad(0).LeftYDown;
         _playerOneGamepad.Down = Inputs.GetGamepad(0).LeftYUp;
         _playerOneGamepad.Left = Inputs.GetGamepad(0).LeftXLeft;
         _playerOneGamepad.Right = Inputs.GetGamepad(0).LeftXRight;
-        _playerOneGamepad.Interact = Inputs.GetGamepad(0).A;
 
         _playerTwoKeyboard.Up = Inputs.Keyboard.Button(KeyCode.Up);
         _playerTwoKeyboard.Down = Inputs.Keyboard.Button(KeyCode.Down);
         _playerTwoKeyboard.Left = Inputs.Keyboard.Button(KeyCode.Left);
         _playerTwoKeyboard.Right = Inputs.Keyboard.Button(KeyCode.Right);
-        _playerTwoKeyboard.Interact = Inputs.Keyboard.Button(KeyCode.Return);
 
         _playerTwoGamepad.Up = Inputs.GetGamepad(1).LeftYDown;
         _playerTwoGamepad.Down = Inputs.GetGamepad(1).LeftYUp;
         _playerTwoGamepad.Left = Inputs.GetGamepad(1).LeftXLeft;
         _playerTwoGamepad.Right = Inputs.GetGamepad(1).LeftXRight;
-        _playerTwoGamepad.Interact = Inputs.GetGamepad(1).A;
     }
 
     private Inputs Inputs { get; }
@@ -78,7 +72,6 @@ public class InputSystem : MoonTools.ECS.System {
             Right = controlSet.Right.State | altControlSet.Right.State,
             Up = controlSet.Up.State | altControlSet.Up.State,
             Down = controlSet.Down.State | altControlSet.Down.State,
-            Interact = controlSet.Interact.State | altControlSet.Interact.State
         };
     }
 }

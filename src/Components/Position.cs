@@ -24,8 +24,8 @@ public readonly record struct Position {
         Y = (int)MathF.Round(v.Y);
     }
 
-    public readonly int X { get; }
-    public readonly int Y { get; }
+    public int X { get; }
+    public int Y { get; }
 
     public Position SetX(int x) {
         return new Position(x, _rawPosition.Y);

@@ -10,15 +10,18 @@ internal partial class CramTextureAtlasDataContext : JsonSerializerContext {
 }
 
 public static class CramAtlasReader {
-    private static readonly JsonSerializerOptions options = new() {
+    private static readonly JsonSerializerOptions Options = new() {
         PropertyNameCaseInsensitive = true
     };
 
-    private static readonly CramTextureAtlasDataContext context = new(options);
+    private static readonly CramTextureAtlasDataContext Context = new(Options);
 
     public static void ReadTextureAtlas(GraphicsDevice graphicsDevice, TexturePage texturePage) {
-        var data = (CramTextureAtlasData)JsonSerializer.Deserialize(File.ReadAllText(texturePage.JsonFilename),
-            typeof(CramTextureAtlasData), context);
+        var data = (CramTextureAtlasData)JsonSerializer.Deserialize(
+            File.ReadAllText(texturePage.JsonFilename),
+            typeof(CramTextureAtlasData), 
+            Context
+        )!;
         texturePage.Load(graphicsDevice, data);
     }
 }

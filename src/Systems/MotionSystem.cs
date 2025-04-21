@@ -8,37 +8,27 @@ namespace MoonworksTemplateGame.Systems;
 
 public class MotionSystem : MoonTools.ECS.System {
     private readonly Filter _accelerateToPositionFilter;
-    private readonly Filter _interactFilter;
-
-    private readonly SpatialHash<Entity> _interactSpatialHash = new(0, 0, Dimensions.GAME_W, Dimensions.GAME_H, 32);
-    private readonly Filter _solidFilter;
     private readonly SpatialHash<Entity> _solidSpatialHash = new(0, 0, Dimensions.GAME_W, Dimensions.GAME_H, 32);
     private readonly Filter _velocityFilter;
+    private readonly Filter _solidFilter;
 
     public MotionSystem(World world) : base(world) {
-        _velocityFilter = FilterBuilder.Include<Position>().Include<Velocity>().Build();
-        _interactFilter = FilterBuilder.Include<Position>().Include<Rectangle>().Include<CanInteract>().Build();
         _solidFilter = FilterBuilder.Include<Position>().Include<Rectangle>().Include<Solid>().Build();
+        _velocityFilter = FilterBuilder.Include<Position>().Include<Velocity>().Build();
         _accelerateToPositionFilter = FilterBuilder.Include<Position>().Include<AccelerateToPosition>()
             .Include<Velocity>().Build();
     }
 
-    private void ClearCanBeHeldSpatialHash() {
-        _interactSpatialHash.Clear();
-    }
-
-    private void ClearSolidSpatialHash() {
-        _solidSpatialHash.Clear();
-    }
-
-    private Rectangle GetWorldRect(Position p, Rectangle r) {
-        return new Rectangle(p.X + r.X, p.Y + r.Y, r.Width, r.Height);
+    private static Rectangle GetWorldRect(Position p, Rectangle r) {
+        return r with { X = p.X + r.X, Y = p.Y + r.Y };
     }
 
     private (Entity other, bool hit) CheckSolidCollision(Entity e, Rectangle rect) {
-        foreach (var (other, otherRect) in _solidSpatialHash.Retrieve(e, rect))
-            if (rect.Intersects(otherRect))
+        foreach (var (other, otherRect) in _solidSpatialHash.Retrieve(e, rect)) {
+            if (rect.Intersects(otherRect)) {
                 return (other, true);
+            }
+        }
 
         return (default, false);
     }
@@ -47,26 +37,18 @@ public class MotionSystem : MoonTools.ECS.System {
         var velocity = Get<Velocity>(e);
         var position = Get<Position>(e);
         var r = Get<Rectangle>(e);
-
         var movement = new Vector2(velocity.X, velocity.Y) * dt;
         var targetPosition = position + movement;
-
         var xEnum = new IntegerEnumerator(position.X, targetPosition.X);
         var yEnum = new IntegerEnumerator(position.Y, targetPosition.Y);
-
         var mostRecentValidXPosition = position.X;
         var mostRecentValidYPosition = position.Y;
-
-        var xHit = false;
-        var yHit = false;
 
         foreach (var x in xEnum) {
             var newPos = new Position(x, position.Y);
             var rect = GetWorldRect(newPos, r);
 
-            var (other, hit) = CheckSolidCollision(e, rect);
-
-            xHit = hit;
+            var (other, xHit) = CheckSolidCollision(e, rect);
 
             if (xHit && Has<Solid>(other) && Has<Solid>(e)) {
                 movement.X = mostRecentValidXPosition - position.X;
@@ -81,8 +63,7 @@ public class MotionSystem : MoonTools.ECS.System {
             var newPos = new Position(mostRecentValidXPosition, y);
             var rect = GetWorldRect(newPos, r);
 
-            var (other, hit) = CheckSolidCollision(e, rect);
-            yHit = hit;
+            var (other, yHit) = CheckSolidCollision(e, rect);
 
             if (yHit && Has<Solid>(other) && Has<Solid>(e)) {
                 movement.Y = mostRecentValidYPosition - position.Y;
@@ -97,28 +78,7 @@ public class MotionSystem : MoonTools.ECS.System {
     }
 
     public override void Update(TimeSpan delta) {
-        ClearCanBeHeldSpatialHash();
-        ClearSolidSpatialHash();
-
-        foreach (var entity in _interactFilter.Entities) {
-            var position = Get<Position>(entity);
-            var rect = Get<Rectangle>(entity);
-
-            _interactSpatialHash.Insert(entity, GetWorldRect(position, rect));
-        }
-
-        foreach (var entity in _interactFilter.Entities)
-        foreach (var other in OutRelations<Colliding>(entity))
-            Unrelate<Colliding>(entity, other);
-
-        foreach (var entity in _interactFilter.Entities) {
-            var position = Get<Position>(entity);
-            var rect = GetWorldRect(position, Get<Rectangle>(entity));
-
-            foreach (var (other, otherRect) in _interactSpatialHash.Retrieve(rect))
-                if (rect.Intersects(otherRect))
-                    Relate(entity, other, new Colliding());
-        }
+        _solidSpatialHash.Clear();
 
         foreach (var entity in _solidFilter.Entities) {
             var position = Get<Position>(entity);
@@ -145,8 +105,8 @@ public class MotionSystem : MoonTools.ECS.System {
             }
 
             if (Has<FallSpeed>(entity)) {
-                var fallspeed = Get<FallSpeed>(entity).Speed;
-                Set(entity, new Velocity(vel + Vector2.UnitY * fallspeed));
+                var fallSpeed = Get<FallSpeed>(entity).Speed;
+                Set(entity, new Velocity(vel + Vector2.UnitY * fallSpeed));
             }
 
             if (Has<MotionDamp>(entity)) {
@@ -159,20 +119,10 @@ public class MotionSystem : MoonTools.ECS.System {
             if (Has<DestroyWhenOutOfBounds>(entity))
                 if (pos.X < -100 || pos.X > Dimensions.GAME_W + 100 || pos.Y < -100 ||
                     pos.Y > Dimensions.GAME_H + 100) {
-                    foreach (var heldEntity in OutRelations<Holding>(entity)) Destroy(heldEntity);
-
                     Destroy(entity);
                 }
 
             // update spatial hashes
-
-            if (Has<CanInteract>(entity)) {
-                var position = Get<Position>(entity);
-                var rect = Get<Rectangle>(entity);
-
-                _interactSpatialHash.Insert(entity, GetWorldRect(position, rect));
-            }
-
             if (Has<Solid>(entity)) {
                 var position = Get<Position>(entity);
                 var rect = Get<Rectangle>(entity);
@@ -180,7 +130,9 @@ public class MotionSystem : MoonTools.ECS.System {
             }
         }
 
-        foreach (var entity in _solidFilter.Entities) UnrelateAll<TouchingSolid>(entity);
+        foreach (var entity in _solidFilter.Entities) {
+            UnrelateAll<TouchingSolid>(entity);
+        }
 
         foreach (var entity in _solidFilter.Entities) {
             var position = Get<Position>(entity);
@@ -202,9 +154,7 @@ public class MotionSystem : MoonTools.ECS.System {
             var (downOther, downCollided) = CheckSolidCollision(entity, downRectangle);
 
             if (leftCollided) Relate(entity, leftOther, new TouchingSolid());
-
             if (rightCollided) Relate(entity, rightOther, new TouchingSolid());
-
             if (upCollided) Relate(entity, upOther, new TouchingSolid());
             if (downCollided) Relate(entity, downOther, new TouchingSolid());
         }
@@ -214,9 +164,7 @@ public class MotionSystem : MoonTools.ECS.System {
             var position = Get<Position>(entity);
             var accelTo = Get<AccelerateToPosition>(entity);
             var difference = accelTo.Target - position;
-            velocity /= accelTo.MotionDampFactor *
-                        (1 + (float)delta
-                            .TotalSeconds); // TODO: IDK if this is deltatime friction but game is fixed fps rn anyway
+            velocity /= accelTo.MotionDampFactor * (1 + (float)delta.TotalSeconds); // TODO: IDK if this is deltatime friction but game is fixed fps rn anyway
             velocity += MathUtilities.SafeNormalize(difference) * accelTo.Acceleration * (float)delta.TotalSeconds;
             Set(entity, new Velocity(velocity));
         }

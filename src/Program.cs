@@ -14,6 +14,8 @@ internal class Program {
 
         AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
 
+        var debugMode = false;
+        
 #if DEBUG
         var windowCreateInfo = new WindowCreateInfo {
             WindowWidth = 1280,
@@ -21,6 +23,7 @@ internal class Program {
             WindowTitle = "Moonworks Game Template",
             ScreenMode = ScreenMode.Windowed
         };
+        debugMode = true;
 #else
 			WindowCreateInfo windowCreateInfo = new WindowCreateInfo {
 				WindowWidth = 1280,
@@ -31,12 +34,6 @@ internal class Program {
 #endif
 
         var framePacingSettings = FramePacingSettings.CreateLatencyOptimized(60);
-
-        var debugMode = false;
-
-#if DEBUG
-        debugMode = true;
-#endif
 
 		var appInfo = new AppInfo("TEMPLATE_ORGANIZATION", "MoonworksGameTemplate");
 		var game = new global::MoonworksTemplateGame.MoonworksTemplateGame(

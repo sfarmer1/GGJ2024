@@ -1,5 +1,3 @@
-using MoonWorks.Graphics;
-
 namespace MoonworksTemplateGame;
 
 public static class Dimensions {

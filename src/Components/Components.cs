@@ -4,13 +4,9 @@ using MoonworksTemplateGame.Data;
 
 namespace MoonworksTemplateGame.Components;
 
-public readonly record struct GameTimer(float Time);
 public readonly record struct Player(int Index);
 public readonly record struct Orientation(float Angle);
-public readonly record struct CanInteract;
-public readonly record struct CanInspect;
 public readonly record struct TryHold;
-public readonly record struct CanHold;
 public readonly record struct Solid;
 public readonly record struct TouchingSolid;
 public readonly record struct Name(int TextID);
@@ -29,7 +25,6 @@ public readonly record struct FunnyRunTimer(float Time); //Scooby doo style quic
 public readonly record struct CanFunnyRun;
 public readonly record struct LastDirection(Vector2 Direction);
 public readonly record struct FallSpeed(float Speed);
-public readonly record struct DestroyAtScreenBottom;
 public readonly record struct GameInProgress; // yaaargh
 public readonly record struct DirectionalSprites(
     SpriteAnimationInfoID Up,
@@ -41,9 +36,7 @@ public readonly record struct DirectionalSprites(
     SpriteAnimationInfoID Left,
     SpriteAnimationInfoID UpLeft
 );
-public readonly record struct StoreExit;
 public readonly record struct AccelerateToPosition(Position Target, float Acceleration, float MotionDampFactor);
-public readonly record struct CanBeStolenFrom;
 public readonly record struct DestroyWhenOutOfBounds;
 public readonly record struct ColorFlicker(int ElapsedFrames, Color Color);
 public readonly record struct MotionDamp(float Damping);

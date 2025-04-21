@@ -655,7 +655,7 @@ using MoonWorks.Graphics;
 using MoonWorks.Graphics.Font;
 using MoonWorks.Storage;
 
-namespace Tactician.Content
+namespace MoonworksTemplateGame.Content
 {{
     public static class Fonts
     {{
@@ -715,11 +715,11 @@ namespace Tactician.Content
 
 			var textureAtlasesClassCode = $@"
 using System.IO;
-using Tactician.Data;
+using MoonworksTemplateGame.Data;
 using MoonWorks.AsyncIO;
 using MoonWorks.Graphics;
 
-namespace Tactician.Content
+namespace MoonworksTemplateGame.Content
 {{
 	public static class TextureAtlases
 	{{
@@ -775,9 +775,9 @@ namespace Tactician.Content
 
 			var spriteAnimationsClassCode = $@"
 using System.Collections.Generic;
-using Tactician.Data;
+using MoonworksTemplateGame.Data;
 
-namespace Tactician.Content
+namespace MoonworksTemplateGame.Content
 {{
 	public static class SpriteAnimations
 	{{
@@ -858,10 +858,10 @@ namespace Tactician.Content
 
 			var textureAtlasesClassCode = $@"
 using System.IO;
-using Tactician.Data;
+using MoonworksTemplateGame.Data;
 using System.Collections.Generic;
 
-namespace Tactician.Content
+namespace MoonworksTemplateGame.Content
 {{
 	public static class Levels
 	{{
@@ -1000,7 +1000,7 @@ using System.IO;
 using MoonWorks.Video;
 using MoonWorks.Graphics;
 
-namespace Tactician.Content
+namespace MoonworksTemplateGame.Content
 {{
 	public static class Videos
 	{{
@@ -1041,9 +1041,9 @@ namespace Tactician.Content
 using System.IO;
 using MoonWorks.AsyncIO;
 using MoonWorks.Audio;
-using Tactician.Data;
+using MoonworksTemplateGame.Data;
 
-namespace Tactician.Content
+namespace MoonworksTemplateGame.Content
 {{
 	public static class StaticAudioPacks
 	{{
@@ -1103,7 +1103,7 @@ using System.IO;
 using MoonWorks.Audio;
 using System.Collections.Generic;
 
-namespace Tactician.Content
+namespace MoonworksTemplateGame.Content
 {{
 	public record struct StaticSoundID(int ID);
 
@@ -1163,7 +1163,7 @@ using MoonWorks.AsyncIO;
 using MoonWorks.Audio;
 using System.Collections.Generic;
 
-namespace Tactician.Content
+namespace MoonworksTemplateGame.Content
 {{
 	public record struct StreamingSoundID(int ID);
 	public record class QoaFile(string FilePath, AudioDataQoa AudioData);
@@ -1223,7 +1223,7 @@ namespace Tactician.Content
 			var musicStemsClassClode = $@"
 using System.IO;
 
-namespace Tactician.Content
+namespace MoonworksTemplateGame.Content
 {{
 	public static class MusicStems
 	{{

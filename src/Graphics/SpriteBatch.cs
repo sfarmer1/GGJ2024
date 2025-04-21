@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using MoonWorks.Graphics;
 using Buffer = MoonWorks.Graphics.Buffer;
 
-namespace Tactician.Graphics;
+namespace MoonworksTemplateGame.Graphics;
 
 public class SpriteBatch {
     public uint InstanceCount => (uint)_instanceIndex;

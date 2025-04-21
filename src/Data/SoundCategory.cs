@@ -1,4 +1,4 @@
-namespace Tactician.Data;
+namespace MoonworksTemplateGame.Data;
 
 public enum SoundCategory {
     Generic,

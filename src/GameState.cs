@@ -1,7 +1,7 @@
 using System;
 using MoonWorks;
 
-namespace Tactician;
+namespace MoonworksTemplateGame;
 
 public abstract class GameState {
     public abstract void Start();

@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Tactician.Utility;
+namespace MoonworksTemplateGame.Utility;
 
 public static class MathUtilities {
     public static Vector2 SafeNormalize(Vector2 v) {

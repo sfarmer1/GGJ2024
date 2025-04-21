@@ -1,10 +1,10 @@
 using System;
 using System.Numerics;
 using MoonTools.ECS;
-using Tactician.Components;
-using Tactician.Utility;
+using MoonworksTemplateGame.Components;
+using MoonworksTemplateGame.Utility;
 
-namespace Tactician.Systems;
+namespace MoonworksTemplateGame.Systems;
 
 public class MotionSystem : MoonTools.ECS.System {
     private readonly Filter _accelerateToPositionFilter;

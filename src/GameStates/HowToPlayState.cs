@@ -3,10 +3,10 @@ using System.Numerics;
 using MoonWorks;
 using MoonWorks.Audio;
 using MoonWorks.Graphics;
-using Tactician.Content;
-using Tactician.Graphics;
+using MoonworksTemplateGame.Content;
+using MoonworksTemplateGame.Graphics;
 
-namespace Tactician.GameStates;
+namespace MoonworksTemplateGame.GameStates;
 
 public class HowToPlayState : GameState {
     private readonly MoonworksTemplateGame _game;

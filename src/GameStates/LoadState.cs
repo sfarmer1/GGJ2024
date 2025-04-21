@@ -5,13 +5,13 @@ using MoonWorks;
 using MoonWorks.AsyncIO;
 using MoonWorks.Graphics;
 using MoonWorks.Graphics.Font;
-using Tactician.Components;
-using Tactician.Content;
+using MoonworksTemplateGame.Components;
+using MoonworksTemplateGame.Content;
 
-namespace Tactician.GameStates;
+namespace MoonworksTemplateGame.GameStates;
 
 public class LoadState : GameState {
-    private readonly MoonworksTemplateGame _game;
+    private readonly global::MoonworksTemplateGame.MoonworksTemplateGame _game;
     private readonly GraphicsDevice _graphicsDevice;
     private readonly Stopwatch _loadTimer = new();
     private readonly TextBatch _textBatch;
@@ -22,7 +22,7 @@ public class LoadState : GameState {
     private readonly GameState _transitionState;
     private AsyncFileLoader _asyncFileLoader;
 
-    public LoadState(MoonworksTemplateGame game, GameState transitionState) {
+    public LoadState(global::MoonworksTemplateGame.MoonworksTemplateGame game, GameState transitionState) {
         _game = game;
         _graphicsDevice = _game.GraphicsDevice;
         _asyncFileLoader = new AsyncFileLoader(_graphicsDevice);

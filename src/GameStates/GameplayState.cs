@@ -1,13 +1,14 @@
 using System;
 using MoonTools.ECS;
 using MoonWorks;
-using Tactician.Components;
-using Tactician.Content;
-using Tactician.Messages;
-using Tactician.Systems;
-using Renderer = Tactician.Graphics.Renderer;
+using MoonworksTemplateGame.Components;
+using MoonworksTemplateGame.Content;
+using MoonworksTemplateGame.Messages;
+using MoonworksTemplateGame.Systems;
+using Graphics_Renderer = MoonworksTemplateGame.Graphics.Renderer;
+using Renderer = MoonworksTemplateGame.Graphics.Renderer;
 
-namespace Tactician.GameStates;
+namespace MoonworksTemplateGame.GameStates;
 
 public class GameplayState : GameState {
     private readonly MoonworksTemplateGame _game;
@@ -18,7 +19,7 @@ public class GameplayState : GameState {
     private MotionSystem _motionSystem;
     private PlayerControllerSystem _playerControllerSystem;
 
-    private Renderer _renderer;
+    private Graphics_Renderer _renderer;
     private SetSpriteAnimationSystem _setSpriteAnimationSystem;
     private GameState _transitionState;
     private UpdateSpriteAnimationSystem _updateSpriteAnimationSystem;
@@ -41,7 +42,7 @@ public class GameplayState : GameState {
         _colorAnimationSystem = new ColorAnimationSystem(_world);
         _directionalAnimationSystem = new DirectionalAnimationSystem(_world);
 
-        _renderer = new Renderer(_world, _game.GraphicsDevice, _game.RootTitleStorage, _game.MainWindow.SwapchainFormat);
+        _renderer = new Graphics_Renderer(_world, _game.GraphicsDevice, _game.RootTitleStorage, _game.MainWindow.SwapchainFormat);
 
         var topBorder = _world.CreateEntity();
         _world.Set(topBorder, new Position(0, 65));

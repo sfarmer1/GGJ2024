@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Tactician.Components;
+namespace MoonworksTemplateGame.Components;
 
 public readonly record struct Velocity {
     public static Velocity Zero = new(0f, 0f);

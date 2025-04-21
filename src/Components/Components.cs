@@ -1,8 +1,8 @@
 using System.Numerics;
 using MoonWorks.Graphics;
-using Tactician.Data;
+using MoonworksTemplateGame.Data;
 
-namespace Tactician.Components;
+namespace MoonworksTemplateGame.Components;
 
 public readonly record struct GameTimer(float Time);
 public readonly record struct Player(int Index);

@@ -1,10 +1,10 @@
 using System;
 using MoonTools.ECS;
 using MoonWorks.Graphics;
-using Tactician.Components;
+using MoonworksTemplateGame.Components;
 using Filter = MoonTools.ECS.Filter;
 
-namespace Tactician.Systems;
+namespace MoonworksTemplateGame.Systems;
 
 public class ColorAnimationSystem : MoonTools.ECS.System {
     private readonly Filter _colorAnimationFilter;

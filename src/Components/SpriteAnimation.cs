@@ -1,8 +1,8 @@
 using System;
 using System.Numerics;
-using Tactician.Data;
+using MoonworksTemplateGame.Data;
 
-namespace Tactician.Components;
+namespace MoonworksTemplateGame.Components;
 
 public struct SpriteAnimation {
     public SpriteAnimationInfoID SpriteAnimationInfoID { get; }

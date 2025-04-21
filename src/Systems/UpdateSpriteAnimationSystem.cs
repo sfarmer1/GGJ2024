@@ -1,8 +1,8 @@
 using System;
 using MoonTools.ECS;
-using Tactician.Components;
+using MoonworksTemplateGame.Components;
 
-namespace Tactician.Systems;
+namespace MoonworksTemplateGame.Systems;
 
 public class UpdateSpriteAnimationSystem : MoonTools.ECS.System {
     private readonly Filter _spriteAnimationFilter;

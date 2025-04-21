@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using MoonWorks.Graphics;
-using Tactician.Components;
+using MoonworksTemplateGame.Components;
 
-namespace Tactician.Data;
+namespace MoonworksTemplateGame.Data;
 
 public readonly record struct TexturePageID(int ID);
 

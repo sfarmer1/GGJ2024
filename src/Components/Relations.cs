@@ -1,4 +1,4 @@
-namespace Tactician.Components;
+namespace MoonworksTemplateGame.Components;
 
 public readonly record struct Colliding;
 public readonly record struct Holding;

@@ -3,12 +3,12 @@
 		<OutputType Condition="'$(Configuration)' == 'Debug'">Exe</OutputType>
 		<OutputType Condition="'$(Configuration)' == 'Release'">WinExe</OutputType>
 		<TargetFramework>net9.0</TargetFramework>
-		<TargetName>Tactician</TargetName>
+		<TargetName>MoonworksTemplateGame</TargetName>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-		<StartupObject>Tactician.Program</StartupObject>
-		<AssemblyName>Tactician</AssemblyName>
-		<RootNamespace>Tactician</RootNamespace>
+		<StartupObject>MoonworksTemplateGame.Program</StartupObject>
+		<AssemblyName>MoonworksTemplateGame</AssemblyName>
+		<RootNamespace>MoonworksTemplateGame</RootNamespace>
 		<TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ApplicationIcon />

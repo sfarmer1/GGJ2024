@@ -1,8 +1,8 @@
 using MoonWorks.Graphics.Font;
-using Tactician.Content;
-using Tactician.Data;
+using MoonworksTemplateGame.Content;
+using MoonworksTemplateGame.Data;
 
-namespace Tactician.Components;
+namespace MoonworksTemplateGame.Components;
 
 public struct Text {
     public FontID FontID { get; }

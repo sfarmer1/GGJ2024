@@ -2,10 +2,10 @@ using System;
 using MoonWorks;
 using MoonWorks.Graphics;
 using MoonWorks.Input;
-using Tactician.Content;
-using Tactician.GameStates;
+using MoonworksTemplateGame.GameStates;
+using MoonworksTemplateGame.Content;
 
-namespace Tactician;
+namespace MoonworksTemplateGame;
 
 public class MoonworksTemplateGame : Game {
     private GameState _currentState;

@@ -3,7 +3,7 @@ using System.IO;
 using MoonWorks;
 using MoonWorks.Graphics;
 
-namespace Tactician;
+namespace MoonworksTemplateGame;
 
 internal class Program {
 	private static readonly string UserDataDirectory =
@@ -39,7 +39,7 @@ internal class Program {
 #endif
 
 		var appInfo = new AppInfo("TEMPLATE_ORGANIZATION", "MoonworksGameTemplate");
-		var game = new MoonworksTemplateGame(
+		var game = new global::MoonworksTemplateGame.MoonworksTemplateGame(
 			appInfo,
 			windowCreateInfo,
 			framePacingSettings,

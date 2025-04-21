@@ -1,6 +1,6 @@
 using MoonWorks.Graphics;
 
-namespace Tactician;
+namespace MoonworksTemplateGame;
 
 public static class Dimensions {
     public const int GAME_W = 640;

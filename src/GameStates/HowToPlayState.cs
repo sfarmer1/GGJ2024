@@ -9,7 +9,7 @@ using Tactician.Graphics;
 namespace Tactician.GameStates;
 
 public class HowToPlayState : GameState {
-    private readonly TacticianGame _game;
+    private readonly MoonworksTemplateGame _game;
     private readonly GraphicsDevice _graphicsDevice;
     private readonly GameState _transitionState;
 
@@ -21,7 +21,7 @@ public class HowToPlayState : GameState {
     private PersistentVoice _musicVoice;
     private AudioDataQoa _music;
 
-    public HowToPlayState(TacticianGame game, GameState transitionState) {
+    public HowToPlayState(MoonworksTemplateGame game, GameState transitionState) {
         _audioDevice = game.AudioDevice;
         _game = game;
         _graphicsDevice = game.GraphicsDevice;

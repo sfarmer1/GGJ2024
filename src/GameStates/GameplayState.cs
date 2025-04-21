@@ -10,7 +10,7 @@ using Renderer = Tactician.Graphics.Renderer;
 namespace Tactician.GameStates;
 
 public class GameplayState : GameState {
-    private readonly TacticianGame _game;
+    private readonly MoonworksTemplateGame _game;
     private AudioSystem _audioSystem;
     private ColorAnimationSystem _colorAnimationSystem;
     private DirectionalAnimationSystem _directionalAnimationSystem;
@@ -24,7 +24,7 @@ public class GameplayState : GameState {
     private UpdateSpriteAnimationSystem _updateSpriteAnimationSystem;
     private World _world;
 
-    public GameplayState(TacticianGame game, GameState transitionState) {
+    public GameplayState(MoonworksTemplateGame game, GameState transitionState) {
         _game = game;
         _transitionState = transitionState;
     }

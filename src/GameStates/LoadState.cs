@@ -11,7 +11,7 @@ using Tactician.Content;
 namespace Tactician.GameStates;
 
 public class LoadState : GameState {
-    private readonly TacticianGame _game;
+    private readonly MoonworksTemplateGame _game;
     private readonly GraphicsDevice _graphicsDevice;
     private readonly Stopwatch _loadTimer = new();
     private readonly TextBatch _textBatch;
@@ -22,7 +22,7 @@ public class LoadState : GameState {
     private readonly GameState _transitionState;
     private AsyncFileLoader _asyncFileLoader;
 
-    public LoadState(TacticianGame game, GameState transitionState) {
+    public LoadState(MoonworksTemplateGame game, GameState transitionState) {
         _game = game;
         _graphicsDevice = _game.GraphicsDevice;
         _asyncFileLoader = new AsyncFileLoader(_graphicsDevice);
@@ -65,13 +65,11 @@ public class LoadState : GameState {
             // Uh oh, time to bail!
             throw new ApplicationException("Game assets could not be loaded!");
 
-        if (_loadTimer.IsRunning && _asyncFileLoader.Status == AsyncFileLoaderStatus.Complete) {
-            _loadTimer.Stop();
-            Logger.LogInfo($"Load finished in {_loadTimer.Elapsed.TotalMilliseconds}ms");
-        }
-
-        // "loading screens are why you have loading times" -Ethan Lee
         if (_asyncFileLoader.Status == AsyncFileLoaderStatus.Complete) {
+            if (_loadTimer.IsRunning) {
+                _loadTimer.Stop();
+                Logger.LogInfo($"Load finished in {_loadTimer.Elapsed.TotalMilliseconds}ms");
+            }
             _timer.Stop();
             _game.SetState(_transitionState);
         }
@@ -83,13 +81,13 @@ public class LoadState : GameState {
         var swapchainTexture = commandBuffer.AcquireSwapchainTexture(_game.MainWindow);
         if (swapchainTexture != null) {
             _textBatch.Start();
-            AddString("L", 60, new Position(1640, 1020), 1.2f + 4 * (float)_timer.Elapsed.TotalSeconds);
-            AddString("O", 60, new Position(1680, 1020), 1.0f + 4 * (float)_timer.Elapsed.TotalSeconds);
-            AddString("A", 60, new Position(1720, 1020), 0.8f + 4 * (float)_timer.Elapsed.TotalSeconds);
-            AddString("D", 60, new Position(1760, 1020), 0.6f + 4 * (float)_timer.Elapsed.TotalSeconds);
-            AddString("I", 60, new Position(1782, 1020), 0.4f + 4 * (float)_timer.Elapsed.TotalSeconds);
-            AddString("N", 60, new Position(1820, 1020), 0.2f + 4 * (float)_timer.Elapsed.TotalSeconds);
-            AddString("G", 60, new Position(1860, 1020), 0.0f + 4 * (float)_timer.Elapsed.TotalSeconds);
+            AddStringToTextBatch("L", 60, new Position(1640, 1020), 1.2f + 4 * (float)_timer.Elapsed.TotalSeconds);
+            AddStringToTextBatch("O", 60, new Position(1680, 1020), 1.0f + 4 * (float)_timer.Elapsed.TotalSeconds);
+            AddStringToTextBatch("A", 60, new Position(1720, 1020), 0.8f + 4 * (float)_timer.Elapsed.TotalSeconds);
+            AddStringToTextBatch("D", 60, new Position(1760, 1020), 0.6f + 4 * (float)_timer.Elapsed.TotalSeconds);
+            AddStringToTextBatch("I", 60, new Position(1782, 1020), 0.4f + 4 * (float)_timer.Elapsed.TotalSeconds);
+            AddStringToTextBatch("N", 60, new Position(1820, 1020), 0.2f + 4 * (float)_timer.Elapsed.TotalSeconds);
+            AddStringToTextBatch("G", 60, new Position(1860, 1020), 0.0f + 4 * (float)_timer.Elapsed.TotalSeconds);
             _textBatch.UploadBufferData(commandBuffer);
 
             var renderPass = commandBuffer.BeginRenderPass(
@@ -97,7 +95,15 @@ public class LoadState : GameState {
             );
 
             renderPass.BindGraphicsPipeline(_textPipeline);
-            _textBatch.Render(renderPass, GetHiResProjectionMatrix());
+            var hiResProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(
+                0,
+                1920,
+                1080,
+                0,
+                0.01f,
+                1000
+            );
+            _textBatch.Render(renderPass, hiResProjectionMatrix);
 
             commandBuffer.EndRenderPass(renderPass);
         }
@@ -113,18 +119,7 @@ public class LoadState : GameState {
         SpriteAnimations.LoadAll();
     }
 
-    private Matrix4x4 GetHiResProjectionMatrix() {
-        return Matrix4x4.CreateOrthographicOffCenter(
-            0,
-            1920,
-            1080,
-            0,
-            0.01f,
-            1000
-        );
-    }
-
-    private void AddString(string text, int pixelSize, Position position, float rotation) {
+    private void AddStringToTextBatch(string text, int pixelSize, Position position, float rotation) {
         _textBatch.Add(
             Fonts.FromID(Fonts.KosugiID),
             text,

@@ -6,8 +6,8 @@ using MoonWorks.Graphics;
 namespace Tactician;
 
 internal class Program {
-    public static string UserDataDirectory =
-        $"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Tactician")}";
+	private static readonly string UserDataDirectory =
+        $"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MoonworksGameTemplate")}";
 
     private static void Main(string[] args) {
         if (!Directory.Exists(UserDataDirectory)) Directory.CreateDirectory(UserDataDirectory);
@@ -18,16 +18,14 @@ internal class Program {
         var windowCreateInfo = new WindowCreateInfo {
             WindowWidth = 1280,
             WindowHeight = 720,
-            WindowTitle = "Tactician",
+            WindowTitle = "Moonworks Game Template",
             ScreenMode = ScreenMode.Windowed
         };
 #else
-			WindowCreateInfo windowCreateInfo = new WindowCreateInfo
-			{
+			WindowCreateInfo windowCreateInfo = new WindowCreateInfo {
 				WindowWidth = 1280,
-
 				WindowHeight = 720,
-				WindowTitle = "Tactician",
+				WindowTitle = "Moonworks Game Template",
 				ScreenMode = ScreenMode.Fullscreen
 			};
 #endif
@@ -40,8 +38,8 @@ internal class Program {
         debugMode = true;
 #endif
 
-		var appInfo = new AppInfo("JerryCrew", "RollAndCash");
-		var game = new TacticianGame(
+		var appInfo = new AppInfo("TEMPLATE_ORGANIZATION", "MoonworksGameTemplate");
+		var game = new MoonworksTemplateGame(
 			appInfo,
 			windowCreateInfo,
 			framePacingSettings,

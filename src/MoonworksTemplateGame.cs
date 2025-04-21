@@ -7,10 +7,10 @@ using Tactician.GameStates;
 
 namespace Tactician;
 
-public class TacticianGame : Game {
+public class MoonworksTemplateGame : Game {
     private GameState _currentState;
 
-    public TacticianGame(
+    public MoonworksTemplateGame(
         AppInfo appInfo,
         WindowCreateInfo windowCreateInfo,
         FramePacingSettings framePacingSettings,
@@ -51,7 +51,7 @@ public class TacticianGame : Game {
     }
 
     public void SetState(GameState gameState) {
-        if (_currentState != null) _currentState.End();
+        _currentState?.End();
 
         gameState.Start();
         _currentState = gameState;

@@ -6,7 +6,6 @@ namespace MoonworksTemplateGame.Components;
 
 public readonly record struct Player(int Index);
 public readonly record struct Orientation(float Angle);
-public readonly record struct TryHold;
 public readonly record struct Solid;
 public readonly record struct TouchingSolid;
 public readonly record struct Name(int TextID);

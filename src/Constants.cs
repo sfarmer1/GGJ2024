@@ -7,5 +7,4 @@ public static class Dimensions {
 
 public static class FontSizes {
     public const int SCORE = 12;
-    public const int SCORE_STRING = 20;
 }
